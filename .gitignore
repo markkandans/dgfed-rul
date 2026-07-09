@@ -1,0 +1,19 @@
+# data (not redistributed; see README)
+datasets/
+
+# environments & caches
+.venv/
+__pycache__/
+
+# experiment logs
+logs/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.blg
+*.bbl
+*.synctex.gz

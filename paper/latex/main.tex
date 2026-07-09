@@ -1,0 +1,370 @@
+% DGFed — IEEE TII draft. Canonical source (markdown version is superseded).
+% Compile: latexmk -pdf main.tex   (needs IEEEtran; standard on Overleaf/texlive-full)
+\documentclass[journal]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\newcommand{\dgfed}{DGFed}
+\newcommand{\figorbox}[3]{\IfFileExists{#1}{\includegraphics[width=#2]{#1}}{\fbox{\parbox{0.93#2}{\centering\vspace{2.5em}\todo{generate #3 (see figure\_specs\_and\_todos.md)}\vspace{2.5em}}}}}
+
+\begin{document}
+
+\title{\dgfed{}: Drift-Governed Federated Learning for Industrial Remaining Useful Life Estimation}
+
+\author{Markkandan~S,~\IEEEmembership{Senior~Member,~IEEE}%
+\thanks{The author is with the School of Electronics Engineering,
+Vellore Institute of Technology, Chennai, India (e-mail: markkandan.s@vit.ac.in;
+ORCID: 0000-0003-3704-4536).}%
+\thanks{This work received no external funding.}}
+
+\markboth{IEEE Transactions on Industrial Informatics}{Markkandan S: \dgfed{}: Drift-Governed Federated Learning for Industrial RUL Estimation}
+
+\maketitle
+
+\begin{abstract}
+Data-driven remaining useful life (RUL) estimation underpins predictive maintenance in industrial cyber-physical systems, yet fleet-wide training data is siloed across edge devices whose uplinks are constrained and whose degradation statistics are heterogeneous and non-stationary. While previous federated learning (FL) studies for prognostics have typically addressed heterogeneity, drift, or communication in isolation, there remains a critical need for a design in which these mechanisms are coordinated and their individual contributions are audited. Addressing this gap, the present study introduces \dgfed{}, a drift-governed FL framework in which a per-client Page--Hinkley detector on prediction residuals governs both the communication schedule (event-triggered uploads) and the server aggregation (drift- and staleness-aware weighting with adaptive divergence clipping), combined with error-feedback top-$k$ sparsification and 8-bit quantization. On the C-MAPSS FD004 benchmark under two heterogeneity partitions with injected degradation-stage drift, \dgfed{} matches FedAvg within seed noise (RMSE $21.78 \pm 1.16$ versus $22.35 \pm 0.99$ on the 12-client unit-fleet partition) at $8.0\times$ lower uplink volume (24.2 versus 193.5\,MB), and the trade-off transfers to held-out FD002 with a frozen configuration, with one boundary reported: a 3.1-RMSE deficit to FedAvg on the FD002 unit partition. A paired-seed component audit backed by activity diagnostics identifies drift-aware aggregation as the most consistent contributor, shows the event trigger to be accuracy-neutral with negligible bandwidth effect, and establishes a negative result: representation--head personalization degrades accuracy in all six paired seeds ($+2.33$ RMSE on the unit partition), with three candidate mechanisms excluded by targeted studies. All findings are multi-seed and pinned to released artifacts.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Federated learning, remaining useful life, predictive maintenance, concept drift, communication efficiency, industrial edge intelligence, prognostics and health management.
+\end{IEEEkeywords}
+
+\section{Introduction}
+\IEEEPARstart{U}{nplanned} downtime of rotating machinery, propulsion systems, and process equipment remains one of the dominant cost drivers in industrial operations, and remaining useful life (RUL) estimation is the prognostic capability that converts condition-monitoring streams into actionable maintenance schedules \cite{saxena2008,heimes2008,zheng2017,li2018,asif2022}. Modern deployments instrument each asset with an edge device that accumulates vibration, temperature, and operating-condition telemetry; collectively, a fleet holds precisely the run-to-failure diversity that data-driven RUL models need. In practice, however, this data rarely pools: raw telemetry is commercially sensitive, plant uplinks are bandwidth-constrained, and regulatory or contractual boundaries separate operators. Federated learning (FL) \cite{mcmahan2017} offers the natural fit---collaborative model training without raw-data exchange---and has consequently attracted growing attention in prognostics and health management (PHM) \cite{chen2023ghdr,chen2023pruning,vermelin2024,chen2024bearing,jeong2025fedjoint}.
+
+An industrial federation, however, violates the assumptions of textbook FL in three coupled ways. First, client data is statistically heterogeneous: assets differ in load profile, age, and fault mode, so local distributions diverge (non-IID). Second, degradation is non-stationary: as a component wears, the relationship between sensed features and RUL shifts, so each client experiences concept drift on its own schedule. Third, edge participation is constrained: uplinks are metered and clients drop out or return stale updates. A critical limitation of existing FL-for-PHM approaches is that these three phenomena are treated by separate mechanisms designed in isolation---yet their solutions interfere. Personalization changes what ``drift'' means per client; drift-triggered retraining generates exactly the traffic that compression suppresses; and straggler-tolerant aggregation can silently absorb stale, drifted updates into the shared model.
+
+This interference motivates the central design idea of this paper: a single per-client drift signal, computed on prediction residuals, that \emph{governs} both the communication schedule and the server-side aggregation weighting, closing the loop between when a client speaks and how much its update counts. We call the resulting framework \dgfed{} (drift-governed federated learning). A second, methodological motivation is independent of the design: component claims in this literature are rarely audited. Ablations are often single-seed, component ``activity'' (whether a mechanism actually fires at the operating point) is rarely verified, and configurations are tuned and evaluated on the same subset. We therefore commit to a paired-seed audit protocol with per-component activity diagnostics, a development/held-out subset split, and a pinned artifact manifest---and we report what the audit finds even where it contradicts our own initial design, which it does in one important respect.
+
+The main novelty of this work is accordingly twofold: the coordinated drift-governed control loop itself, and the systematic, reproducible audit of which of its components earn their place under which heterogeneity regime. We do not claim a new learning algorithm in each component; detectors, sparsifiers, and weighted aggregation are established primitives. The contribution is their coupling, its evaluation discipline, and the resulting evidence---including a robust negative result on a widely used personalization pattern.
+
+The contributions of this paper are:
+\begin{itemize}
+\item \textbf{Proposed \dgfed{}}, a federated RUL framework in which a residual-based Page--Hinkley drift signal jointly governs event-triggered client uploads and drift/staleness-aware server aggregation with adaptive divergence clipping, on top of error-feedback top-$k$ sparsification with 8-bit quantization. On C-MAPSS FD004 (12-client unit-fleet partition), \dgfed{} attains RMSE $21.78 \pm 1.16$ versus FedAvg's $22.35 \pm 0.99$ at $8.0\times$ lower uplink (24.2 vs.\ 193.5\,MB), with the pattern replicated on a 6-client operating-regime partition ($21.02 \pm 1.16$ vs.\ $20.12 \pm 2.63$ at 10.5 vs.\ 84.0\,MB).
+\item \textbf{Conducted a paired-seed component audit} with activity diagnostics (drift-fire, upload-skip, and clip rates) across both partitions, identifying drift-aware aggregation as the most sign-consistent contributor (removal costs $+0.85$/$+0.66$ RMSE; positive in 5 of 6 paired seeds) and demonstrating that the event trigger is accuracy-neutral with negligible ($\leq 0.7\%$) bandwidth savings---a claim boundary we state explicitly rather than imply.
+\item \textbf{Established and dissected a negative result}: naive joint-trained representation--head personalization degrades RUL accuracy in all 6 paired seeds ($+2.33 \pm 0.51$ RMSE unit; $+0.98 \pm 0.63$ regime), and three candidate mechanisms---unseen-degradation-stage generalization, head--body mismatch under aggregation, and client data scale---are excluded by targeted stratified, counterfactual-body, and regression studies, respectively.
+\item \textbf{Validated transfer on a held-out subset}: the complete frozen configuration, calibrated only on FD004, reproduces the accuracy--communication trade-off on C-MAPSS FD002 without any retuning, and every reported number is pinned to a released artifact via a hash manifest covering 38 result files.
+\end{itemize}
+
+Because this is an empirical systems study, we formalize the evaluation around three hypotheses, adjudicated in Section~\ref{sec:results}: \textbf{H1}, that \dgfed{} matches FedAvg within seed noise at materially lower uplink (against the null that the reduction costs accuracy); \textbf{H2}, that component contributions are non-uniform and identifiable by paired-seed deltas; and \textbf{H3}, that a client-local prediction head improves accuracy under heterogeneity and drift, as commonly assumed in personalized FL for PHM \cite{collins2021fedrep,chen2023ghdr,chen2024bearing}.
+
+\section{Related Work}\label{sec:related}
+
+\subsection{Federated Learning and Communication Efficiency}
+FedAvg \cite{mcmahan2017} established the canonical FL round---local SGD epochs followed by data-size-weighted parameter averaging---and FedProx \cite{li2020fedprox} added a proximal term that stabilizes local updates under statistical heterogeneity; both serve as our baselines. Communication reduction has since developed along two largely orthogonal lines. Quantization and sparsification compress each update: QSGD \cite{alistarh2017} bounds the variance of stochastic quantization, top-$k$ gradient sparsification transmits only the largest-magnitude coordinates \cite{aji2017}, and error feedback \cite{karimireddy2019} accumulates the discarded mass locally so that compression bias does not accumulate in the model---the mechanism we adopt. Event-triggered or lazily aggregated schemes instead reduce the \emph{number} of transmissions, uploading only when an update is informative \cite{chen2018lag}. These lines are typically evaluated on stationary vision or language benchmarks; how a trigger should interact with client-local non-stationarity---where ``nothing new to send'' and ``everything has changed'' alternate---is not addressed, and our diagnostics show the interaction is decisive (Section~\ref{sec:audit}).
+\subsection{Personalized Federated Learning}
+Personalization addresses non-IID data by giving each client model a private component. Representation--head splits such as FedRep \cite{collins2021fedrep} federate a shared feature extractor while each client keeps a local prediction head, typically trained with alternating body-freeze/head-tune phases; Ditto \cite{li2021ditto} instead regularizes a personal model toward the global one. The pattern has been imported into PHM largely as-is: GHDR-FL \cite{chen2023ghdr} federates shallow degradation features and attaches a client-unique superstructure for turbofan RUL, and client-personalized aggregation has been proposed for bearing RUL \cite{chen2024bearing}. What is missing is an adversarial test of the pattern under \emph{temporal} distribution shift: personalization is usually evaluated on static non-IID splits, where fitting the local distribution is unambiguously beneficial. Our results show that under degradation-stage drift the naive joint-trained variant of this pattern consistently \emph{hurts} (Section~\ref{sec:negative}), and we bound the claim carefully against the alternating-optimization variants.
+
+\subsection{Federated Learning for Prognostics and RUL}
+Centralized deep RUL estimation on C-MAPSS is mature---recurrent \cite{heimes2008,zheng2017}, convolutional \cite{li2018}, and hybrid \cite{asif2022} architectures define the accuracy landscape---and the federated line is growing rapidly; Qian \emph{et al.} \cite{qian2025ftl} survey it comprehensively. Early work established feasibility for fault diagnosis with dynamic validation \cite{zhang2021kbs}; for RUL specifically, GHDR-FL \cite{chen2023ghdr} federates shared degradation features with personal superstructures, network pruning shrinks federated RUL models \cite{chen2023pruning}, collaborative RUL training has been demonstrated across simulated fleets \cite{vermelin2024}, and joint degradation/failure-event modeling has been formulated federatively \cite{jeong2025fedjoint}. Two recent directions approach our concerns from one side each: Li \emph{et al.} \cite{li2026light} reduce communication in federated machinery diagnostics via flexible light-weight exchange, but address stationary classification without a drift signal; Fang \emph{et al.} \cite{fang2025proto} handle spatio-temporal domain shift in federated diagnosis through contrastive prototypes, but treat shift as a static alignment problem rather than an online signal, and neither couples adaptation to an uplink budget. Across these works, communication cost is at most a secondary metric, drift is generally absent from the threat model, and component contributions are asserted rather than audited with seed-paired statistics. It is noticeable that none of the previous research couples a drift signal to both the communication schedule and the aggregation rule, nor validates its configuration on a held-out subset. Different from existing works, we present exactly this coupling and this audit.
+
+\subsection{Concept Drift and Drift-Aware Federation}
+Sequential change detection is classical: the Page--Hinkley test \cite{page1954} monitors a cumulative deviation statistic, and ADWIN \cite{bifet2007} maintains adaptive windows; Gama \emph{et al.} \cite{gama2014} survey adaptation strategies. A dedicated drift-aware FL line has since emerged---recently consolidated under the banner of federated drift-aware learning \cite{fdal2025survey}. CDA-FedAvg \cite{casado2022} augments FedAvg with client-side detection and rehearsal for continual adaptation; Flash \cite{panchal2023flash} pairs client early-stopping detection with server-side drift-aware adaptive optimization and matches adaptive-optimizer convergence rates; FedDrift \cite{jothimurugesan2023} maintains clustered models under distributed, asynchronous drift; and cluster-adaptation variants continue to appear for large IoT populations \cite{fedplc2026}. These methods consume the drift signal in the optimizer or in model multiplication, are evaluated on classification benchmarks, and leave the communication budget out of the loop. Two design choices distinguish our use. Detection runs on \emph{prediction residuals} rather than raw inputs, so it flags genuine target drift (the model degrading) rather than benign covariate shift; and detection is \emph{client-local}, because degradation regimes shift asynchronously across a fleet---a global detector would be both late and wrong for most clients. Client-level drift detection has recently been used to trigger event-driven federated updates for spacecraft PHM \cite{upc2026thesis}; to our knowledge, however, routing one residual-based flag simultaneously into the upload schedule and the aggregation weighting, under an explicit uplink budget and a component-level audit, remains unexamined for federated prognostics. A terminological note: this temporal concept drift is distinct from the `client drift' of heterogeneous-optimization FL \cite{li2020fedprox}, which concerns divergence of local optima, not non-stationarity in time.
+
+\textbf{Positioning.} Cross-paper C-MAPSS numbers are not directly comparable---splits, labels, and federation constructions differ across \cite{zheng2017,asif2022,chen2023ghdr,vermelin2024}---so our like-for-like evidence is the reproduced FedAvg/FedProx/local/centralized ladder under an identical protocol.
+
+\section{Problem Formulation}\label{sec:problem}
+Consider a federation of $K$ edge clients, where client $k$ holds a private stream of condition-monitoring windows $x \in \mathbb{R}^{L \times F}$ ($L$ cycles of $F$ standardized sensor and operating-setting channels) with RUL labels $y \in [0, R_{\max}]$ under the standard piecewise-linear cap. Three properties define the setting.
+
+\textbf{Heterogeneity.} Local distributions differ: $P_k(x, y) \neq P_j(x, y)$ for $k \neq j$, induced by asset identity (fleet composition, wear state) or operating regime.
+
+\textbf{Drift.} Each local distribution is non-stationary, $P_k^{(t)}(x, y) \neq P_k^{(t')}(x, y)$, as the asset traverses degradation stages; shifts occur asynchronously across clients.
+
+\textbf{Communication and participation constraints.} In each round $t$, a fraction $C$ of clients is sampled, a fraction $\rho_s$ of those drops out (stragglers), and each upload of client $k$ costs $b_k^{(t)}$ bytes.
+
+Given a model $f_\theta$ with loss $\ell$, the design goal is
+\begin{equation}\label{eq:obj}
+\min_{\theta}\; \frac{1}{K} \sum_{k=1}^{K} \mathbb{E}_{(x,y) \sim P_k^{(t)}} \big[ \ell(f_\theta(x), y) \big] \;\; \text{s.t.} \;\; \sum_{t} \sum_{k} b_k^{(t)} \leq B,
+\end{equation}
+where $B$ is the total uplink budget. We report the empirical Pareto point each method reaches---RMSE against total uplink megabytes---rather than fixing $B$ a priori, together with the fleet-fairness statistics defined in Section~\ref{sec:metrics}. Stating the objective as accuracy \emph{subject to} a byte budget, rather than as a single scalar, is what makes the compression and trigger components separately measurable.
+
+\section{Proposed Method: \dgfed{}}\label{sec:method}
+
+\subsection{Overview}
+\begin{figure*}[t]
+\centering
+\figorbox{figures/fig1_loop.pdf}{\textwidth}{Fig.~1 control-loop schematic}
+\caption{\dgfed{} control loop. Client $k$: local training on its stream; a Page--Hinkley detector on prediction residuals emits drift flag $d_k$; the flag and a relative delta-norm rule decide the upload; error-feedback top-$k$ plus 8-bit compression. Server: decompression, adaptive divergence clipping, aggregation weighted by data size, staleness, and drift flag, then broadcast. One signal ($d_k$) feeds \emph{both} the upload decision and the aggregation weight, closing the loop.}
+\label{fig:loop}
+\end{figure*}
+Each round proceeds as follows. The server broadcasts the shared parameters $\theta$ to a sampled client subset. Each participating client trains locally for $E$ epochs, evaluates its detector on fresh residuals, and then makes an \emph{upload decision}: a client that is quiescent (small parameter delta) and not drifting stays silent. Clients that do upload send a compressed delta. The server decompresses, clips each delta adaptively, and aggregates with weights that discount staleness and boost freshly drifted clients. Fig.~\ref{fig:loop} summarizes the loop; Algorithm~\ref{alg:dgfed} gives the procedure. The design decision that Section~\ref{sec:negative} justifies empirically: \emph{all} parameters, including the prediction head, are federated. A client-local head is evaluated as a design axis (arm \dgfed{}-P) and rejected by the audit. Finally, a scope note: \dgfed{} inherits FL's raw-data locality, but parameter sharing alone does not preclude inference from updates; secure aggregation and differential privacy are orthogonal additions \cite{kairouz2021} and are not claimed here.
+
+\subsection{Residual-Based Local Drift Detection}\label{sec:detector}
+Client $k$ maintains a Page--Hinkley (PH) statistic over the stream of absolute prediction residuals $r_i = |f_\theta(x_i) - y_i|$ computed on its held-out ordered tail after each local training phase. With forgetting factor $\alpha$, tolerance $\delta$, and threshold $\lambda$:
+\begin{align}
+m_i &= \alpha\, m_{i-1} + (1-\alpha)\, r_i, \label{eq:phmean}\\
+g_i &= \alpha\, g_{i-1} + (r_i - m_i - \delta), \quad G_i = \min(G_{i-1}, g_i), \label{eq:phstat}
+\end{align}
+and a drift flag $d_k = 1$ is raised when $g_i - G_i > \lambda$, upon which the statistic resets. In \eqref{eq:phmean}--\eqref{eq:phstat}, $m_i$ is the forgetting running mean of residuals and $g_i - G_i$ measures sustained upward deviation. Two choices matter. Detecting on residuals rather than inputs flags \emph{target} drift---the model actually degrading---and ignores benign covariate wander. Keeping detection local matches the asynchronous nature of degradation: one asset enters a new wear regime while its peers remain stable. In contrast to drift-aware FL schemes that spend the detection signal on server-side optimizer adaptation \cite{panchal2023flash} or on maintaining multiple clustered models \cite{jothimurugesan2023}, \dgfed{} keeps a single global model and routes the flag into scheduling and weighting---constant per-client state and no model proliferation, which suits fleets where regimes shift asset by asset. The threshold $\lambda$ is the only tuned detector parameter; Section~\ref{sec:protocol} gives its calibration protocol and Section~\ref{sec:robust} its cross-partition portability, which is a stated limitation.
+
+\subsection{Event-Triggered Uploads}\label{sec:trigger}
+Let $\Delta_k = \theta_k^{\text{after}} - \theta$ be the local parameter delta and $H_k$ the running median of client $k$'s own past delta norms. The client skips its upload iff
+\begin{equation}\label{eq:trigger}
+d_k = 0 \;\wedge\; \lVert \Delta_k \rVert_2 < \gamma \cdot H_k,
+\end{equation}
+with $\gamma = 0.3$; a client's first update is always sent. The rule is deliberately \emph{relative}: an absolute threshold is either inert or destructive depending on model scale (our diagnostics confirmed an earlier absolute variant never fired at realistic delta norms), whereas \eqref{eq:trigger} adapts to each client's own optimization dynamics. The drift flag overrides the trigger---a drifting client always speaks---which couples this component to Section~\ref{sec:detector} and, as the audit shows, bounds how much bandwidth the trigger can save when drift is frequent.
+
+\subsection{Error-Feedback Compression With Sensitivity-Weighted Budgets}\label{sec:compress}
+Uploads are compressed in three steps. First, error feedback \cite{karimireddy2019} adds the residual $e_k$ of previously discarded mass: $\tilde{\Delta}_k = \Delta_k + e_k$. Second, a global keep-budget $\kappa N$ over the $N = |\theta|$ parameters is allocated across layers in proportion to each layer's delta energy,
+\begin{equation}\label{eq:alloc}
+k_l = \max\!\Big\{1,\; \Big\lfloor \kappa N \cdot \frac{s_l}{\sum_j s_j} \Big\rfloor\Big\}, \qquad s_l = \lVert \tilde{\Delta}_{k,l} \rVert_2,
+\end{equation}
+and the top-$k_l$ coordinates per layer are retained---a cheap sensitivity proxy that concentrates the budget where the update carries task signal. Third, retained values are quantized with a $q$-bit affine quantizer (per-tensor scale and zero point; $q = 8$). The feedback memory is then updated:
+\begin{equation}\label{eq:ef}
+e_k \leftarrow \tilde{\Delta}_k - \mathcal{D}\big(\mathcal{C}(\tilde{\Delta}_k)\big),
+\end{equation}
+where $\mathcal{C}$/$\mathcal{D}$ denote compression/decompression. The uplink cost is accounted exactly as
+\begin{equation}\label{eq:bytes}
+b_k = \sum_{l} \big[\, k_l \,(q/8 + 4) + c_q \,\big],
+\end{equation}
+i.e., $q/8$ bytes per retained value, 4 bytes per coordinate index, and $c_q = 8$ bytes of per-tensor quantizer constants; uncompressed baselines are charged 4 bytes per parameter. With $\kappa = 0.1$, the measured end-to-end reduction versus FedAvg is $8.0\times$ (Section~\ref{sec:main}).
+
+\subsection{Drift- and Staleness-Aware Aggregation With Adaptive Clipping}\label{sec:agg}
+Let $a_k$ be the number of rounds since client $k$ last synchronized and $n_k$ its sample count. Each received delta is first clipped to a round-adaptive bound,
+\begin{equation}\label{eq:clip}
+\hat{\Delta}_k = \Delta_k \cdot \min\!\Big(1,\; \frac{c \cdot \operatorname{med}_j \lVert \Delta_j \rVert_2}{\lVert \Delta_k \rVert_2}\Big),
+\end{equation}
+with $c = 2$, protecting the shared model from stale or anomalous outliers while---unlike an absolute bound---never throttling healthy early-training dynamics. Aggregation weights combine three factors:
+\begin{equation}\label{eq:agg}
+w_k = n_k \cdot \frac{\tau_0}{\tau_0 + a_k} \cdot \rho^{\,d_k}, \qquad \theta \leftarrow \theta + \sum_{k \in \mathcal{U}_t} \frac{w_k}{\sum_j w_j}\, \hat{\Delta}_k,
+\end{equation}
+where $\tau_0 = 2$ discounts staleness, $\rho = 1.5$ up-weights a freshly drifted client's update as carrying new regime information, and $\mathcal{U}_t$ is the set of received uploads. When the staleness and drift factors are disabled, \eqref{eq:agg} reduces exactly to FedAvg's data-size weighting, which is how the plain-aggregation ablation arm is instantiated. This is the second consumer of the drift flag: the same signal that forces a drifting client to upload also amplifies how much that upload counts.
+
+\subsection{Algorithm and Overhead}
+\begin{algorithm}[t]
+\small
+\caption{\dgfed{} (one round $t$)}
+\label{alg:dgfed}
+\begin{algorithmic}[1]
+\REQUIRE shared params $\theta$; clients $1{:}K$; participation $C$; straggler rate $\rho_s$
+\ENSURE updated $\theta$
+\STATE $\mathcal{S}_t \leftarrow$ sample $\lceil C K \rceil$ clients; drop each with prob.\ $\rho_s$
+\FORALL{clients $k \in \mathcal{S}_t$ in parallel}
+  \STATE load $\theta$; train $E$ local epochs on own stream
+  \STATE $d_k \leftarrow$ PH update on fresh residuals \hfill \eqref{eq:phmean}--\eqref{eq:phstat}
+  \STATE $\Delta_k \leftarrow \theta_k - \theta$
+  \STATE \textbf{if} $d_k = 0$ \textbf{and} $\lVert\Delta_k\rVert < \gamma H_k$ \textbf{then} skip upload \hfill \eqref{eq:trigger}
+  \STATE upload $\mathcal{C}(\Delta_k + e_k)$; update $e_k$ \hfill \eqref{eq:ef}
+\ENDFOR
+\STATE server: decompress; clip each received $\Delta_k$ \hfill \eqref{eq:clip}
+\STATE server: $\theta \leftarrow \theta + \sum_{k} \frac{w_k}{\sum_j w_j}\, \hat{\Delta}_k$ \hfill \eqref{eq:agg}
+\end{algorithmic}
+\end{algorithm}
+Per-round client overhead beyond FedAvg is one forward pass over the held-out tail (drift check), an $O(|\theta|)$ top-$k$ selection, and $O(|\theta|)$ feedback memory; the server adds one median computation per round. No second optimization loop, dual variables, or control state beyond $\{H_k, e_k, a_k\}$ is required, keeping the scheme deployable on constrained edge hardware; the client and server procedures map directly onto standard FL frameworks' client/strategy abstractions.
+
+\subsection{Convergence and Stability Considerations}
+We do not claim a convergence theorem under simultaneous client drift, partial participation, and event-triggered sparsified communication; to our knowledge none exists for this combination, and deriving one is left to future work. The design nonetheless stays inside regimes with known guarantees or explicit bounds. Error-feedback top-$k$ compression admits contraction-based convergence guarantees for distributed SGD \cite{karimireddy2019}, which motivates \eqref{eq:ef} over biased sparsification. The aggregation weights \eqref{eq:agg} are normalized, with the staleness factor in $(0,1]$ and the drift factor bounded by $\rho$, so no client can dominate a round beyond its data share by more than a constant factor; the adaptive clip \eqref{eq:clip} bounds every accepted delta by twice the round median, bounding the aggregate step. Empirically, these guards correspond to zero divergent runs in the 16-run stability study of Section~\ref{sec:robust}.
+
+\subsection{Personalization as an Audited Design Axis}\label{sec:persaxis}
+The representation--head split---federating the feature extractor while each client keeps a private RUL head---is the standard personalization pattern in this literature \cite{collins2021fedrep,chen2023ghdr,chen2024bearing}. Rather than adopting or dismissing it a priori, we instantiate it as arm \textbf{\dgfed{}-P} (identical to \dgfed{} except the head parameters never leave the client, trained jointly with the body each round) and subject it to the same paired-seed audit as every other component. Section~\ref{sec:negative} reports the outcome---a consistent accuracy penalty---together with a three-way mechanism exclusion study, and bounds the finding: it concerns \emph{naive joint-trained} local heads under stage drift, not alternating-optimization personalization such as FedRep's original procedure, which remains future work.
+
+\section{Experimental Setup}\label{sec:setup}
+
+\subsection{Dataset and Preprocessing}
+We use the NASA C-MAPSS turbofan degradation benchmark \cite{saxena2008}, the standard public run-to-failure corpus for RUL research. Two multi-operating-condition subsets are employed: \textbf{FD004} (249 training units, six operating conditions, two fault modes---the hardest subset and our \emph{development} set) and \textbf{FD002} (six operating conditions, one fault mode---our \emph{held-out confirmation} set; Section~\ref{sec:protocol}). Each record carries three operating settings and 21 sensor channels. Near-constant sensors are removed by a variance threshold fit on training data only; remaining channels plus the three settings are z-score standardized with training-set statistics reused on all evaluation data. Inputs are sliding windows of $L = 30$ cycles; labels use the standard piecewise-linear RUL cap $R_{\max} = 125$ \cite{heimes2008}. Operating regimes are recovered by $k$-means clustering of the three settings into six conditions, matching the documented regime structure. The official per-unit test split (last window per test unit against the ground-truth RUL file) is additionally reported for the centralized baseline to anchor our model family against the literature.
+
+\subsection{Federation Construction and Drift Injection}\label{sec:federation}
+\textbf{Partitions.} Two client constructions probe different heterogeneity regimes. The \textbf{unit-fleet partition} assigns disjoint groups of engine units to $K = 12$ clients---the natural industrial setting of separate fleets, with mild non-IID induced by unit wear diversity and FD004's two fault modes. The \textbf{operating-regime partition} assigns each \emph{window} to the client matching its operating condition at the window's final cycle, yielding $K = 6$ clients with severe feature-skew non-IID; here a client models an operating site or regime rather than a machine. We note for reproducibility that a third, seemingly natural construction---assigning each \emph{unit} to its dominant operating condition---is degenerate on FD004 and FD002: because conditions vary cycle-to-cycle and every unit visits all six regimes with near-identical time shares, all units share one dominant regime and the federation collapses to a single client. This is why regime heterogeneity must be constructed at window level, and our pipeline hard-fails any federated run that forms fewer than two clients.
+
+\textbf{Drift injection.} Real degradation drift on C-MAPSS is entangled with unit identity, so we inject controlled stage drift: each client's windows are sorted by descending RUL (healthy $\rightarrow$ degraded) and split into $S = 3$ equal blocks whose order is permuted per client with a seeded RNG, producing abrupt distribution shifts at block boundaries that arrive asynchronously across clients. Each client's stream is then split \emph{in order} into an 80\% training prefix and a 20\% held-out tail; federated accuracy is evaluated on these tails. A consequence used by the mechanism study of Section~\ref{sec:negative}: a client's tail contains RUL bands absent from its own prefix, operationalizing ``unseen degradation stages.'' We state the assumption--limitation--mitigation triad plainly: injected block drift is a controlled proxy, it may differ in smoothness from natural wear progressions, and validating against naturally drifting streams (e.g., FEMTO bearings) is planned future work.
+
+\subsection{Protocol: Development, Calibration, Held-Out Confirmation}\label{sec:protocol}
+All design decisions and all hyperparameter selection were performed on FD004 exclusively. The single tuned detector parameter, $\lambda$, was calibrated by a sweep over $\{250, 500, 1000, 2500, 5000\}$ using 50-round single-seed runs on the FD004 unit partition, selecting the smallest value whose drift-fire rate lands in a 3--8\% target band; only $\lambda = 5000$ qualified (fire rates 22.2\%, 20.3\%, 14.9\%, 9.5\%, 5.7\%, respectively). All remaining parameters are fixed defaults with stated rationale (Table~\ref{tab:hyper}); results were not tuned against them. The complete frozen configuration was then applied to FD002---both partitions---with \emph{no retuning of any kind}; FD002 fire rates are reported as observed. Main comparisons use 3 seeds (0--2); an 8-seed extension supports the divergence analysis of Section~\ref{sec:robust}. Ablation variants share seeds with the base configuration, enabling the paired-seed deltas of Section~\ref{sec:audit}.
+
+\subsection{Baselines and Variants}
+The comparison ladder isolates each question. \textbf{Centralized} (pooled training, 30 epochs) upper-bounds accuracy with no privacy or bandwidth constraint; \textbf{local-only} (per-client training, 30 epochs) lower-bounds it under isolation; \textbf{FedAvg} \cite{mcmahan2017} and \textbf{FedProx} \cite{li2020fedprox} ($\mu = 0.01$, the authors' commonly used small value, fixed not tuned) are the standard-FL baselines, sharing the full model uncompressed every round with data-size aggregation. \textbf{\dgfed{}} is the proposed method; \textbf{\dgfed{}-P} is the personalized-head arm (Section~\ref{sec:persaxis}). Component ablations remove exactly one mechanism from \dgfed{}: the drift signal, the event trigger, the drift/staleness aggregation (reducing \eqref{eq:agg} to FedAvg weighting), or compression. All methods share the identical backbone---Conv1d($F{\to}32$, $k{=}5$) $\rightarrow$ Conv1d($32$, $k{=}3$) $\rightarrow$ LSTM(64) $\rightarrow$ FC(64) feature extractor with an FC(32)${\to}1$ regression head, dropout 0.2---optimizer, seeds, and evaluation code.
+
+\subsection{Metrics}\label{sec:metrics}
+\textbf{RMSE} on the pooled client tails is the primary error metric. The \textbf{asymmetric C-MAPSS score} \cite{saxena2008}, $s = \sum_i \phi(d_i)$ with $d_i = \hat{y}_i - y_i$, $\phi(d) = e^{-d/13} - 1$ for $d < 0$ and $e^{d/10} - 1$ otherwise, penalizes late predictions more heavily, matching maintenance cost asymmetry; being exponential, it is meaningful only once RMSE is in a converged range and we interpret it accordingly. \textbf{Uplink volume} (MB) is the total measured upload cost under the byte accounting of Section~\ref{sec:compress}. Fleet fairness is captured by the \textbf{per-client RMSE variance} and the \textbf{worst-client RMSE}, so a good average cannot hide an abandoned client. \textbf{Retention bins} split each tail into five sequential segments and report per-bin RMSE, exposing erosion under drift. \textbf{Seen/unseen strata} partition tail windows by whether their RUL value occurs in the client's own training prefix. Lower is better for all metrics.
+
+\subsection{Implementation and Reproducibility}
+\begin{table}[t]
+\caption{Hyperparameters (fixed unless noted)}
+\label{tab:hyper}
+\centering\small
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llll@{}}
+\toprule
+Group & Parameter & Value & Rationale \\
+\midrule
+Data & $L$ / $R_{\max}$ / $S$ & 30 / 125 / 3 & standard \cite{heimes2008} / std.\ / Sec.~\ref{sec:federation} \\
+Model & conv/LSTM/latent/head & 32/64/64/32 & compact edge backbone \\
+ & dropout & 0.2 & \\
+Training & optim.\ / LR / batch & Adam / $10^{-3}$ / 128 & common FL defaults \\
+ & local epochs $E$ / rounds & 1 / 200 & \\
+Federation & $C$ / $\rho_s$ / $K$ & 0.6 / 0.1 / 12, 6 & partial, unreliable \\
+Detector & $\delta$ / $\alpha$ / $\lambda$ & 0.005 / 0.9999 / \textbf{5000} & $\lambda$ calibrated, Sec.~\ref{sec:protocol} \\
+Trigger & $\gamma$ & 0.3 & relative rule, Sec.~\ref{sec:trigger} \\
+Compression & $\kappa$ / quantizer & 0.10 / 8-bit affine & Sec.~\ref{sec:compress} \\
+Aggregation & $\tau_0$ / $\rho$ / $c$ & 2 / 1.5 / 2 & Sec.~\ref{sec:agg} \\
+Baselines & $\mu$ / solo epochs & 0.01 / 30 & fixed, stated \\
+\bottomrule
+\end{tabular}}
+\end{table}
+Experiments ran in PyTorch on Apple-silicon GPU (MPS backend) after a CPU-parity check (5-round RMSE within $\approx$1.4\%, no NaNs); repeated runs on the same machine reproduced per-seed RMSEs exactly, which the counterfactual study of Section~\ref{sec:negative} exploits. The C-MAPSS data is publicly available from the NASA Prognostics Center of Excellence. Code, the federation-construction pipeline, all result JSONs, and a manifest pinning the 38 artifact files behind every reported table via content hashes accompany the paper \todo{repository URL / supplementary link}.
+
+\section{Results and Analysis}\label{sec:results}
+
+\subsection{Main Comparison on the Development Set (FD004)}\label{sec:main}
+\begin{table*}[t]
+\caption{FD004 main results (3 seeds, mean $\pm$ std; MB = total uplink; Var/Worst = per-client fairness)}
+\label{tab:fd004}
+\centering\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Method & RMSE & Score & MB & Var & Worst \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Unit-fleet partition (12 clients)}} \\
+Centralized (upper bd.)$^\dagger$ & $20.71 \pm 1.46$ & 160K $\pm$ 47K & n/a & 26.5 & 28.3 \\
+Local-only (lower bd.) & 36.61 & 4.68M & 0 & 226.6 & 80.6 \\
+FedAvg & $22.35 \pm 0.99$ & 220K $\pm$ 104K & 193.5 & 45.5 & 31.5 \\
+FedProx & $23.09 \pm 0.67$ & 388K $\pm$ 260K & 193.5 & 44.0 & 31.6 \\
+\textbf{\dgfed{} (ours)} & $21.78 \pm 1.16$ & 268K $\pm$ 147K & \textbf{24.2} & 33.6 & 30.6 \\
+\dgfed{}-P (personal head) & $24.11 \pm 0.66$ & 312K $\pm$ 182K & 22.8 & 29.8 & 31.9 \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Operating-regime partition (6 clients)}} \\
+Centralized & $20.93 \pm 2.08$ & 94K $\pm$ 13K & n/a & 35.1 & 25.4 \\
+Local-only & 23.36 & 129K & 0 & 5.8 & 25.2 \\
+FedAvg & $20.12 \pm 2.63$ & 88K $\pm$ 31K & 84.0 & 46.0 & 24.7 \\
+FedProx & $20.46 \pm 2.13$ & 104K $\pm$ 22K & 84.0 & 56.8 & 24.8 \\
+\textbf{\dgfed{} (ours)} & $21.02 \pm 1.16$ & 101K $\pm$ 11K & \textbf{10.5} & 51.4 & 26.0 \\
+\dgfed{}-P & $22.00 \pm 0.96$ & 121K $\pm$ 14K & 9.9 & 35.5 & 26.4 \\
+\bottomrule
+\multicolumn{6}{@{}l}{\footnotesize$^\dagger$Official C-MAPSS test split: 23.16 RMSE / 7468 score.}\\
+\end{tabular}
+\end{table*}
+Three observations from Table~\ref{tab:fd004}. First, federation is decisively worth having where clients are weak: on the unit partition, local-only training leaves the worst client at RMSE 80.6, which every federated method roughly halves---the fairness variance drops from 226.6 to $\leq 51$. Between federated methods fairness is mixed rather than uniformly in our favor: \dgfed{} has the lower per-client variance on unit (33.6 vs.\ FedAvg's 45.5) but slightly higher on regime (51.4 vs.\ 46.0). Second, \dgfed{} reaches FedAvg-level accuracy at $8.0\times$ lower uplink on both partitions (24.2 vs.\ 193.5\,MB; 10.5 vs.\ 84.0\,MB); on the unit partition its mean RMSE is nominally \emph{better} than FedAvg's (21.78 vs.\ 22.35), though within seed noise, and on the regime partition it trails by 0.9 RMSE, also within noise. The exponential score tells the same within-noise story at far wider spreads (unit: 268K $\pm$ 147K vs.\ 220K $\pm$ 104K). Third, the regime partition weakens the case for federation itself: six large single-regime clients make local-only competitive (23.36), and FedAvg slightly \emph{outperforms} the centralized model (20.12 vs.\ 20.93)---a pattern that recurs on FD002 and is discussed in Section~\ref{sec:discussion}. Fig.~\ref{fig:tradeoff} visualizes the communication--accuracy plane.
+\begin{figure}[t]
+\centering
+\figorbox{figures/fig2_comm_accuracy.pdf}{\columnwidth}{Fig.~2 communication--accuracy plane}
+\caption{Communication--accuracy plane on FD004 (both partitions). Total uplink (MB, log scale) versus RMSE (mean $\pm$ std) for \dgfed{}, \dgfed{}-P, the no-compression arm, FedAvg, and FedProx; the centralized bound (dotted) and local-only baseline (dashed) are horizontal references. \dgfed{} sits at FedAvg-level accuracy at $8.0\times$ lower uplink.}
+\label{fig:tradeoff}
+\end{figure}
+
+\subsection{Held-Out Confirmation (FD002, Frozen Configuration)}\label{sec:heldout}
+\begin{table*}[t]
+\caption{FD002 held-out results (3 seeds; frozen configuration, no retuning)}
+\label{tab:fd002}
+\centering\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Method & RMSE & Score & MB & Var & Worst \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Unit partition (12 clients)}} \\
+Centralized$^\dagger$ & $19.83 \pm 2.03$ & 99K $\pm$ 34K & n/a & 50.6 & 29.2 \\
+Local-only & 39.04 & 4.31M & 0 & 251.9 & 80.6 \\
+FedAvg & $20.24 \pm 2.20$ & 104K $\pm$ 30K & 193.5 & 63.7 & 29.2 \\
+FedProx & $21.33 \pm 1.00$ & 119K $\pm$ 12K & 193.5 & 53.6 & 29.9 \\
+\textbf{\dgfed{} (ours)} & $23.33 \pm 2.40$ & 298K $\pm$ 149K & \textbf{24.2} & 43.3 & 31.4 \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Regime partition (6 clients)}} \\
+Centralized & $23.76 \pm 4.11$ & 150K $\pm$ 63K & n/a & 28.8 & 28.9 \\
+Local-only & 30.06 & 232K & 0 & 1.8 & 31.7 \\
+FedAvg & $20.46 \pm 3.92$ & 100K $\pm$ 50K & 84.0 & 44.6 & 24.2 \\
+FedProx & $20.64 \pm 4.09$ & 107K $\pm$ 62K & 84.0 & 50.4 & 25.0 \\
+\textbf{\dgfed{} (ours)} & $21.21 \pm 3.31$ & 107K $\pm$ 43K & \textbf{10.5} & 45.7 & 25.4 \\
+\bottomrule
+\multicolumn{6}{@{}l}{\footnotesize$^\dagger$Official C-MAPSS test split: 18.13 RMSE / 2468 score.}\\
+\end{tabular}
+\end{table*}
+The frozen configuration transfers (Table~\ref{tab:fd002}). The qualitative structure replicates---federation rescues weak clients (unit local-only $39.04 \to 23.33$), the $8\times$ uplink reduction is identical by construction, and \dgfed{} lands at FedAvg level on the regime partition (21.21 vs.\ 20.46, well within the large shared seed spread). The one place the picture weakens, which we report rather than smooth over: on the FD002 unit partition \dgfed{} trails FedAvg by 3.1 RMSE ($23.33 \pm 2.40$ vs.\ $20.24 \pm 2.20$)---overlapping $\pm$std intervals at $n = 3$, and driven largely by one weak seed (per-seed retention in the artifacts), but a wider gap than anywhere on FD004; the score gap there is correspondingly amplified (298K $\pm$ 149K vs.\ 104K $\pm$ 30K), consistent with the exponential penalty magnifying that seed's tail errors. A signed-error check on deterministically reproduced models shows the direction is shared rather than method-specific: both \dgfed{} and FedAvg over-predict RUL on FD002-unit by $\approx$2.7 cycles on average---the costly late direction---so the deficit reflects per-seed tail errors, not a directional offset unique to \dgfed{}. Detector activity also shifts as predicted for a threshold calibrated on another subset: fire rates 6.7\% (unit) and 14.3\% (regime) against FD004's 7.9\%/19.0\%---conservative in this instance, but direction is not guaranteed, and Section~\ref{sec:discussion} lists threshold portability as a limitation. Diagnostics: skip 0.37\%/0.12\%, clip 1.06\%/0.18\%; seen/unseen strata $18.29 \pm 0.97$ / $24.96 \pm 2.20$ (unit) and $12.83 \pm 0.96$ / $22.99 \pm 3.67$ (regime), matching FD004's shape.
+
+\subsection{Component Audit: Paired-Seed Ablation With Activity Diagnostics}\label{sec:audit}
+Ablations use the proposed (shared-head) configuration as base, remove one component per arm, and share seeds with the base, so each arm yields three \emph{paired} deltas per partition. Table~\ref{tab:ablation} reports both the marginal statistics and the paired evidence; because $n = 3$ underpowers formal tests, we report paired mean $\pm$ std and sign consistency and interpret conservatively.
+\begin{table*}[t]
+\caption{FD004 rebased ablation (3 seeds) with paired-seed deltas ($\Delta$ = arm $-$ \dgfed{}; positive = removal hurts)}
+\label{tab:ablation}
+\centering\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Arm & RMSE & MB & $\Delta$ paired & Sign \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Unit partition}} \\
+\textbf{\dgfed{} (base)} & $21.78 \pm 1.16$ & 24.2 & --- & --- \\
+$-$ drift signal & $22.11 \pm 1.38$ & 24.1 & $+0.33 \pm 0.53$ & 2/3 $+$ \\
+$-$ event trigger & $22.36 \pm 1.27$ & 24.2 & $+0.58 \pm 0.63$ & 2/3 $+$ \\
+$-$ drift/stale aggregation & $22.63 \pm 1.74$ & 24.2 & $+0.85 \pm 0.59$ & \textbf{3/3} $+$ \\
+$-$ compression & $21.15 \pm 1.95$ & 193.0 & $-0.63 \pm 1.92$ & 1/3 $+$ \\
+$+$ personal head (\dgfed{}-P) & $24.11 \pm 0.66$ & 22.8 & $+2.33 \pm 0.51$ & \textbf{3/3} $+$ \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Regime partition}} \\
+\textbf{\dgfed{} (base)} & $21.02 \pm 1.16$ & 10.5 & --- & --- \\
+$-$ drift signal & $21.48 \pm 0.71$ & 10.5 & $+0.46 \pm 0.50$ & 2/3 $+$ \\
+$-$ event trigger & $21.00 \pm 1.19$ & 10.5 & $-0.02 \pm 0.02$ & 0/3 $+$ \\
+$-$ drift/stale aggregation & $21.67 \pm 0.16$ & 10.5 & $+0.66 \pm 1.23$ & 2/3 $+$ \\
+$-$ compression & $19.68 \pm 2.32$ & 83.6 & $-1.34 \pm 1.39$ & 1/3 $+$ \\
+$+$ personal head (\dgfed{}-P) & $22.00 \pm 0.96$ & 9.9 & $+0.98 \pm 0.63$ & \textbf{3/3} $+$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+Activity diagnostics for the base configuration confirm every retained mechanism actually operates at the reported operating point: drift fires on 8.1\%/18.9\% of client-rounds (unit/regime), the trigger skips 0.2\%/0.2\% of uploads, and the clip engages on 0.1\%/1.0\% with mean scale $\approx 0.93$--$0.96$ when active. Interpretation, component by component. \textbf{Drift/staleness aggregation} is the most consistent contributor: its removal costs $+0.85$/$+0.66$ RMSE with the best sign pattern (5/6 paired seeds positive)---the single clearest algorithmic gain of the drift-governed loop. \textbf{The drift signal} feeding it is directionally positive on both partitions ($+0.33$/$+0.46$, 4/6) but within noise at $n = 3$. \textbf{The event trigger} deserves the bluntest sentence in the paper: it saves $\leq 0.7\%$ of bytes (top-$k$ compression removes the traffic the trigger would otherwise skip, and drifting clients may never skip), it is a literal no-op on the regime partition ($\Delta = -0.02 \pm 0.02$), and an 8-seed extension found no stability effect either (Section~\ref{sec:robust}). Like personalization, the trigger is thus an audited design axis whose measured null is itself a finding; the proposed configuration retains it because it is cost-free, directionally positive on unit, and forward-compatible with sparser-drift regimes where gating has headroom, and we claim nothing more for it. \textbf{Compression} is the honest trade the framework is built around: $8\times$ fewer bytes for a within-noise 0.6 (unit) to a real 1.3 (regime) RMSE cost. Table~\ref{tab:ablation}'s sign column summarizes the per-seed deltas; Fig.~\ref{fig:retention} shows the retention curves (flat-to-mild on unit, consistently rising on regime).
+\begin{figure}[t]
+\centering
+\figorbox{figures/fig4_retention.pdf}{\columnwidth}{Fig.~4 retention curves}
+\caption{Retention curves (RMSE across five sequential tail bins), \dgfed{} vs.\ \dgfed{}-P, both partitions: flat-to-mild erosion on unit, consistent erosion on regime.}
+\label{fig:retention}
+\end{figure}
+
+\subsection{The Personalization Negative Result and Mechanism Exclusion}\label{sec:negative}
+The single most consistent effect in Table~\ref{tab:ablation} is not a component gain but a penalty: the client-local head hurts in all six paired seeds ($+2.33 \pm 0.51$ unit; $+0.98 \pm 0.63$ regime), a pattern that held across every configuration generation of this study. Because the representation--head split is the default personalization pattern in federated PHM \cite{collins2021fedrep,chen2023ghdr,chen2024bearing}, we dissected the mechanism with three targeted studies rather than leaving an unexplained anomaly.
+\begin{table}[t]
+\caption{Mechanism studies (3 seeds)}
+\label{tab:mechanism}
+\centering\small
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\multicolumn{4}{@{}l}{\textbf{A: seen/unseen RUL strata}} \\
+Setting / arm & Seen & Unseen & Gap \\
+\midrule
+Unit, \dgfed{}-P & $21.77 \pm 3.13$ & $24.76 \pm 1.70$ & $+2.98$ \\
+Unit, \dgfed{} & $16.46 \pm 1.29$ & $23.77 \pm 0.74$ & $+7.31$ \\
+Regime, \dgfed{}-P & $12.59 \pm 0.42$ & $24.49 \pm 0.54$ & $+11.89$ \\
+Regime, \dgfed{} & $10.09 \pm 2.11$ & $23.60 \pm 1.67$ & $+13.51$ \\
+\midrule
+\multicolumn{4}{@{}l}{\textbf{B: counterfactual body pairing}} \\
+Setting & \multicolumn{2}{c}{Global body $+$ local head} & Own final body $+$ local head \\
+\midrule
+Unit & \multicolumn{2}{c}{$\mathbf{24.11 \pm 0.66}$ (seen 21.77)} & $27.91 \pm 2.27$ (seen 22.52) \\
+Regime & \multicolumn{2}{c}{$\mathbf{22.00 \pm 0.96}$ (seen 12.59)} & $23.92 \pm 0.78$ (seen 15.49) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\textbf{Hypothesis M1---selective failure on unseen degradation stages: rejected.} If local heads overfit the stages a client has seen, \dgfed{}-P's seen$\to$unseen gap should exceed \dgfed{}'s. Table~\ref{tab:mechanism} (panel A) shows the opposite: \dgfed{}-P's gap is \emph{smaller}, because it is worse on \emph{both} strata---including a 5.3-RMSE deficit on the client's own seen distribution (21.77 vs.\ 16.46, unit). The personalized head does not even exploit the local data it was meant to fit.
+\textbf{Hypothesis M2---head--body mismatch under aggregation: rejected.} If each head were mis-paired with a global body it was not trained against, pairing it with the client's \emph{own} final local body should help. Exploiting on-machine run determinism, we retrained the arm identically (reproducing its per-seed RMSEs exactly) while preserving each client's final local body, then evaluated both pairings. Own-body pairing is \emph{worse} in all six runs (Table~\ref{tab:mechanism}, panel B)---heads benefit from the aggregated representation.
+
+\textbf{Hypothesis M3---client data scale: unsupported.} Regressing each client's head penalty (\dgfed{}-P minus \dgfed{} per-client RMSE) on its training-window count yields no meaningful correlation on the unit partition (Pearson $-0.09$, Spearman $+0.06$, $n = 12$; penalty positive for all 12 clients, range $+0.14$ to $+6.70$) and nothing interpretable on regime ($n = 6$, dominated by one large client). A stated caveat bounds this test: client sizes span a narrow range ($\approx$3.1--4.0k windows on unit), leaving little leverage to detect a size effect; within that range the penalty is roughly uniform.
+
+What survives is a deliberately modest conclusion: under these conditions a jointly trained local head is \emph{uniformly} weaker than a federated head---across clients, RUL strata, and body pairings---rather than selectively fragile. The claim boundary matters: this indicts the naive joint-training instantiation common in applied FL-PHM, not personalization per se; alternating-optimization schemes \cite{collins2021fedrep} with explicit head-fitting phases may behave differently and are the direct follow-up. For practitioners the actionable reading is that on C-MAPSS-scale industrial clients, head personalization should be treated as a hypothesis to test, not a default to adopt.
+
+\subsection{Robustness, Calibration Transfer, and Hypothesis Verdicts}\label{sec:robust}
+An 8-seed extension on the unit partition (\dgfed{} and its no-trigger arm) found zero divergent runs in 16 (all RMSE $\leq 35$, no delta-norm collapse), retiring an earlier single-seed instability observed under the over-firing pre-calibration detector and denying the trigger a stability claim. The $\lambda$ sweep of Section~\ref{sec:protocol} doubles as a sensitivity analysis: fire rate falls monotonically from 22.2\% ($\lambda{=}250$) to 5.7\% ($\lambda{=}5000$), and only the calibrated value lands in the target band; on the regime partition the same $\lambda$ fires at $\approx$19\%, so the threshold is partition-calibrated, not universal---a residual-scale normalization is the identified fix.
+
+\textbf{Verdicts.} \textbf{H1 accepted with one stated boundary}: \dgfed{} matches FedAvg within seed noise at $8.0\times$ lower uplink in three of four dataset$\times$partition settings; on FD002-unit it trails by 3.1 RMSE with overlapping $\pm$std. \textbf{H2 accepted}: contributions are non-uniform---drift/staleness aggregation is the most consistent gain (5/6), the trigger is null-to-marginal, compression is a quantified trade. \textbf{H3 rejected} in its personalization-helps form, in all six paired seeds, with three mechanisms excluded.
+The centralized baseline's official-test results (Tables~\ref{tab:fd004} and~\ref{tab:fd002}) sit in the credible range of the deep-RUL literature \cite{zheng2017,asif2022}, anchoring the shared backbone; that is their only role here.
+
+\section{Discussion and Threats to Validity}\label{sec:discussion}
+\textbf{Where the drift-governed loop pays, and where it does not.} The audit's clearest lesson is architectural: of the two consumers of the drift signal, the \emph{aggregation-side} consumer earns its place (5/6 paired seeds, both partitions) while the \emph{communication-side} consumer does not---top-$k$ compression already removes the traffic an event trigger would suppress, and the override that forces drifting clients to upload caps the trigger's reach precisely when drift is common. For designers this inverts a common intuition: under aggressive update compression, the marginal value of transmission gating is small, and drift signals are better spent re-weighting trust in what arrives than deciding whether it arrives.
+
+\textbf{The personalization result in context.} That a client-local head consistently hurts will read as surprising against the personalized-FL literature \cite{collins2021fedrep,li2021ditto,chen2023ghdr,chen2024bearing}, and the mechanism study is what makes the result useful rather than merely contrarian: the penalty is uniform across clients, strata, and body pairings, which is the signature of an under-trained component, not of a distribution-fit trade-off. Two boundary conditions frame generality. Our clients are C-MAPSS-scale (thousands of windows) with a compact backbone; larger local datasets or higher-capacity heads may cross the threshold where local fitting wins. And the finding targets \emph{joint} head training inside the federated round; alternating schemes that freeze the body and fit the head to convergence \cite{collins2021fedrep} are structurally protected from the failure mode observed here and remain untested in this setting.
+
+\textbf{The regime-partition inversion.} On both datasets' regime partitions, FedAvg slightly outperforms the pooled centralized model (FD004: 20.12 vs.\ 20.93; FD002: 20.46 vs.\ 23.76). We flag this as an observation with a plausible reading---with six large, internally homogeneous shards, partial participation plus averaging acts as an implicit regularizer that pooled training lacks---and resist a stronger claim; at $n = 3$ with $\pm$2--4 seed spreads, the inversion is directional, not established. It does, however, reinforce a practical point: regime-partitioned federations are where local-only training is most competitive and federation's marginal value is thinnest, so fleet topology should inform whether FL is worth its coordination cost.
+
+\textbf{Threats to validity.} \emph{Internal:} hyperparameters were fixed rather than adversarially tuned per method (FedProx's $\mu$ is a stated default); MPS-vs-CPU numerics differ by $\approx$1.4\% (on-machine determinism verified; cross-hardware bit-reproducibility not claimed); the $\lambda$ band, though pre-registered, is a design choice. \emph{External:} evidence is one benchmark family (C-MAPSS) under injected block drift; natural drift, other asset classes, larger federations, truly asynchronous participation, and label/quantity-skew extremes are untested, and $\lambda$ is partition-calibrated (5.7\% fire on FD004-unit vs.\ $\approx$19\% on regime). \emph{Construct:} injected drift may overstate the abruptness of natural wear; the seen/unseen operationalization captures stage novelty, not sensor-pattern novelty; byte accounting excludes protocol overhead, slightly flattering the $8\times$ ratio. \emph{Conclusion:} $n=3$ seeds force reliance on paired deltas and sign consistency, with all per-seed values released in the artifact manifest for independent testing; 0/16 divergence bounds but does not exclude rare instabilities; exceptions are listed, not smoothed---the FD002-unit gap and the regime compression cost are real.
+
+\section{Conclusion}\label{sec:conclusion}
+This paper asked whether the three coupled obstacles to federated RUL estimation at the industrial edge---heterogeneity, drift, and communication constraints---are better served by one coordinating signal than by three isolated mechanisms, and answered with a framework and an audit. \dgfed{}'s drift-governed loop delivers FedAvg-level accuracy at $8.0\times$ lower uplink on C-MAPSS FD004 ($21.78 \pm 1.16$ RMSE at 24.2\,MB vs.\ $22.35 \pm 0.99$ at 193.5\,MB), transfers to held-out FD002 without retuning, and decomposes cleanly under paired-seed analysis: drift-aware aggregation is the component that earns its place, the event trigger is retained only because it is free, and---against the field's default---client-local prediction heads degrade accuracy in every paired seed, a result we dissected until three candidate mechanisms were excluded. Future work follows directly: replacing the partition-calibrated detector threshold with residual-normalized detection; testing alternating-optimization personalization where joint training failed; and confronting the framework with naturally drifting run-to-failure streams and a real distributed deployment. More broadly, we hope the audit protocol---paired seeds, activity diagnostics, held-out configuration transfer, pinned artifacts---travels beyond this paper, because in federated PHM the scarce resource is not another component but calibrated evidence about the ones we have.
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

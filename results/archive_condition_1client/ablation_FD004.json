@@ -1,0 +1,44 @@
+{
+  "full": {
+    "rmse": 28.408695220947266,
+    "score": 211304.265625,
+    "per_client_var": 0.0,
+    "worst_client_rmse": 28.408695220947266,
+    "total_MB_uploaded": 3.251165
+  },
+  "no_personal_head": {
+    "rmse": 27.846561431884766,
+    "score": 197327.5,
+    "per_client_var": 0.0,
+    "worst_client_rmse": 27.846561431884766,
+    "total_MB_uploaded": 3.355638
+  },
+  "no_drift_signal": {
+    "rmse": 28.408695220947266,
+    "score": 211304.265625,
+    "per_client_var": 0.0,
+    "worst_client_rmse": 28.408695220947266,
+    "total_MB_uploaded": 3.251165
+  },
+  "no_event_trigger": {
+    "rmse": 28.408695220947266,
+    "score": 211304.265625,
+    "per_client_var": 0.0,
+    "worst_client_rmse": 28.408695220947266,
+    "total_MB_uploaded": 3.251165
+  },
+  "no_compression": {
+    "rmse": 27.235244750976562,
+    "score": 186169.140625,
+    "per_client_var": 0.0,
+    "worst_client_rmse": 27.235244750976562,
+    "total_MB_uploaded": 25.936384
+  },
+  "plain_aggregation": {
+    "rmse": 27.211156845092773,
+    "score": 186678.46875,
+    "per_client_var": 0.0,
+    "worst_client_rmse": 27.211156845092773,
+    "total_MB_uploaded": 3.251235
+  }
+}

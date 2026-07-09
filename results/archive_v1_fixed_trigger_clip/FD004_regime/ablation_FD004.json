@@ -1,0 +1,50 @@
+{
+  "full": {
+    "rmse": 22.46733283996582,
+    "score": 108106.21875,
+    "per_client_var": 42.2932992929963,
+    "worst_client_rmse": 26.16271209716797,
+    "total_MB_uploaded": 9.806695,
+    "n_clients": 6
+  },
+  "no_personal_head": {
+    "rmse": 22.16585350036621,
+    "score": 110038.578125,
+    "per_client_var": 57.31852819934479,
+    "worst_client_rmse": 25.81573486328125,
+    "total_MB_uploaded": 10.32823,
+    "n_clients": 6
+  },
+  "no_drift_signal": {
+    "rmse": 22.275028228759766,
+    "score": 106719.9609375,
+    "per_client_var": 34.444925494711676,
+    "worst_client_rmse": 25.552186965942383,
+    "total_MB_uploaded": 9.806785,
+    "n_clients": 6
+  },
+  "no_event_trigger": {
+    "rmse": 22.46733283996582,
+    "score": 108106.21875,
+    "per_client_var": 42.2932992929963,
+    "worst_client_rmse": 26.16271209716797,
+    "total_MB_uploaded": 9.806695,
+    "n_clients": 6
+  },
+  "no_compression": {
+    "rmse": 21.841230392456055,
+    "score": 104150.328125,
+    "per_client_var": 40.73288921509258,
+    "worst_client_rmse": 25.791112899780273,
+    "total_MB_uploaded": 78.24384,
+    "n_clients": 6
+  },
+  "plain_aggregation": {
+    "rmse": 22.510473251342773,
+    "score": 114793.5546875,
+    "per_client_var": 40.474003702897,
+    "worst_client_rmse": 26.194602966308594,
+    "total_MB_uploaded": 9.80675,
+    "n_clients": 6
+  }
+}

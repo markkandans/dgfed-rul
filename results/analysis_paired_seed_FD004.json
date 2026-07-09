@@ -1,0 +1,109 @@
+{
+  "description": "Per-seed paired RMSE deltas (variant - proposed), same seed & partition.",
+  "partitions": {
+    "unit": {
+      "+personal_head": {
+        "per_seed_delta": [
+          2.9216651916503906,
+          2.378948211669922,
+          1.6860847473144531
+        ],
+        "mean": 2.328899383544922,
+        "std": 0.5056635393248904,
+        "sign_pattern": "3/3 positive"
+      },
+      "proposed_no_drift_signal": {
+        "per_seed_delta": [
+          -0.29339027404785156,
+          0.9968147277832031,
+          0.2734794616699219
+        ],
+        "mean": 0.3256346384684245,
+        "std": 0.5280134837531015,
+        "sign_pattern": "2/3 positive"
+      },
+      "proposed_no_event_trigger": {
+        "per_seed_delta": [
+          1.231069564819336,
+          -0.2775077819824219,
+          0.7740859985351562
+        ],
+        "mean": 0.5758825937906901,
+        "std": 0.6316195294954507,
+        "sign_pattern": "2/3 positive"
+      },
+      "proposed_plain_aggregation": {
+        "per_seed_delta": [
+          0.3324851989746094,
+          0.5410270690917969,
+          1.6748619079589844
+        ],
+        "mean": 0.8494580586751302,
+        "std": 0.5898254338968698,
+        "sign_pattern": "3/3 positive"
+      },
+      "proposed_no_compression": {
+        "per_seed_delta": [
+          1.687814712524414,
+          -3.0163230895996094,
+          -0.5728797912597656
+        ],
+        "mean": -0.6337960561116537,
+        "std": 1.9209392162577987,
+        "sign_pattern": "1/3 positive"
+      }
+    },
+    "regime": {
+      "+personal_head": {
+        "per_seed_delta": [
+          0.08967399597167969,
+          1.449533462524414,
+          1.4050483703613281
+        ],
+        "mean": 0.9814186096191406,
+        "std": 0.6308201396241425,
+        "sign_pattern": "3/3 positive"
+      },
+      "proposed_no_drift_signal": {
+        "per_seed_delta": [
+          -0.079437255859375,
+          1.1187667846679688,
+          0.3495140075683594
+        ],
+        "mean": 0.4629478454589844,
+        "std": 0.49569725798983433,
+        "sign_pattern": "2/3 positive"
+      },
+      "proposed_no_event_trigger": {
+        "per_seed_delta": [
+          0.0,
+          -0.04777336120605469,
+          0.0
+        ],
+        "mean": -0.015924453735351562,
+        "std": 0.022520578445917074,
+        "sign_pattern": "0/3 positive"
+      },
+      "proposed_plain_aggregation": {
+        "per_seed_delta": [
+          -0.4604816436767578,
+          2.363496780395508,
+          0.06931304931640625
+        ],
+        "mean": 0.6574427286783854,
+        "std": 1.2255980648146814,
+        "sign_pattern": "2/3 positive"
+      },
+      "proposed_no_compression": {
+        "per_seed_delta": [
+          -1.9070281982421875,
+          -2.679475784301758,
+          0.5765666961669922
+        ],
+        "mean": -1.3366457621256511,
+        "std": 1.3891136865466769,
+        "sign_pattern": "1/3 positive"
+      }
+    }
+  }
+}

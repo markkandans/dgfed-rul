@@ -1,0 +1,63 @@
+{
+  "config": {
+    "data_root": "./datasets/CMAPSS",
+    "subset": "FD001",
+    "window": 30,
+    "rul_cap": 125,
+    "n_conditions": 6,
+    "partition": "condition",
+    "max_clients": 12,
+    "inject_drift": true,
+    "drift_segments": 3,
+    "n_body_filters": 32,
+    "lstm_hidden": 64,
+    "latent_dim": 64,
+    "head_hidden": 32,
+    "dropout": 0.2,
+    "method": "local",
+    "rounds": 5,
+    "clients_per_round": 0.6,
+    "local_epochs": 1,
+    "batch_size": 128,
+    "lr": 0.001,
+    "fedprox_mu": 0.01,
+    "central_epochs": 30,
+    "personalize_head": true,
+    "use_drift_detector": true,
+    "ph_delta": 0.005,
+    "ph_lambda": 50.0,
+    "ph_alpha": 0.9999,
+    "event_trigger": true,
+    "trigger_tau": 0.001,
+    "compress": true,
+    "topk_ratio": 0.1,
+    "quant_bits": 8,
+    "sensitivity_weighting": true,
+    "staleness_aware": true,
+    "drift_aware_agg": true,
+    "stale_tau0": 2.0,
+    "drift_boost": 1.5,
+    "divergence_clip": 5.0,
+    "straggler_rate": 0.1,
+    "seed": 0,
+    "device": "cuda",
+    "results_dir": "./results"
+  },
+  "runs": [
+    {
+      "rmse": 27.804584503173828,
+      "score": 67046.65625,
+      "per_client_rmse": [
+        29.317041397094727,
+        24.75606918334961,
+        29.446468353271484,
+        29.362770080566406
+      ],
+      "per_client_var": 4.003115807156746,
+      "worst_client_rmse": 29.446468353271484,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "seed": 0
+    }
+  ]
+}

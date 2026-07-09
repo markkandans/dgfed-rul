@@ -1,0 +1,132 @@
+{
+  "config": {
+    "data_root": "./datasets/CMAPSS",
+    "subset": "FD004",
+    "window": 30,
+    "rul_cap": 125,
+    "n_conditions": 6,
+    "partition": "regime",
+    "max_clients": 12,
+    "inject_drift": true,
+    "drift_segments": 3,
+    "n_body_filters": 32,
+    "lstm_hidden": 64,
+    "latent_dim": 64,
+    "head_hidden": 32,
+    "dropout": 0.2,
+    "method": "dgfed",
+    "rounds": 200,
+    "clients_per_round": 0.6,
+    "local_epochs": 1,
+    "batch_size": 128,
+    "lr": 0.001,
+    "fedprox_mu": 0.01,
+    "central_epochs": 30,
+    "personalize_head": true,
+    "use_drift_detector": true,
+    "ph_delta": 0.005,
+    "ph_lambda": 50.0,
+    "ph_alpha": 0.9999,
+    "event_trigger": true,
+    "trigger_tau": 0.001,
+    "compress": true,
+    "topk_ratio": 0.1,
+    "quant_bits": 8,
+    "sensitivity_weighting": true,
+    "staleness_aware": true,
+    "drift_aware_agg": true,
+    "stale_tau0": 2.0,
+    "drift_boost": 1.5,
+    "divergence_clip": 5.0,
+    "straggler_rate": 0.1,
+    "seed": 2,
+    "device": "cuda",
+    "results_dir": "./results"
+  },
+  "runs": [
+    {
+      "rmse": 22.46733283996582,
+      "score": 108106.21875,
+      "per_client_rmse": [
+        25.423221588134766,
+        14.383570671081543,
+        25.44082260131836,
+        9.843770980834961,
+        25.434043884277344,
+        26.16271209716797
+      ],
+      "per_client_var": 42.2932992929963,
+      "worst_client_rmse": 26.16271209716797,
+      "retention_rmse_bins": [
+        18.108501434326172,
+        21.15057945251465,
+        22.813385009765625,
+        24.7926025390625,
+        24.77640151977539
+      ],
+      "total_MB_uploaded": 9.806695,
+      "mean_bytes_per_round": 49033.475,
+      "method": "dgfed",
+      "n_clients": 6,
+      "seed": 0
+    },
+    {
+      "rmse": 27.348560333251953,
+      "score": 418962.5625,
+      "per_client_rmse": [
+        38.85663986206055,
+        19.188840866088867,
+        37.97238540649414,
+        18.457866668701172,
+        14.98122787475586,
+        9.58250617980957
+      ],
+      "per_client_var": 125.81850442316136,
+      "worst_client_rmse": 38.85663986206055,
+      "retention_rmse_bins": [
+        15.861602783203125,
+        20.0403995513916,
+        25.861228942871094,
+        33.01614761352539,
+        36.459590911865234
+      ],
+      "total_MB_uploaded": 10.00711,
+      "mean_bytes_per_round": 50035.55,
+      "method": "dgfed",
+      "n_clients": 6,
+      "seed": 1
+    },
+    {
+      "rmse": 22.19902801513672,
+      "score": 115732.2109375,
+      "per_client_rmse": [
+        24.73099136352539,
+        12.381128311157227,
+        18.378488540649414,
+        24.29724884033203,
+        24.308008193969727,
+        24.391510009765625
+      ],
+      "per_client_var": 21.227250622368857,
+      "worst_client_rmse": 24.73099136352539,
+      "retention_rmse_bins": [
+        15.557766914367676,
+        20.264816284179688,
+        22.568565368652344,
+        25.25499153137207,
+        25.780879974365234
+      ],
+      "total_MB_uploaded": 10.04306,
+      "mean_bytes_per_round": 50215.3,
+      "method": "dgfed",
+      "n_clients": 6,
+      "seed": 2
+    }
+  ],
+  "summary": {
+    "rmse_mean": 24.004973729451496,
+    "rmse_std": 2.36680873788484,
+    "score_mean": 214266.99739583334,
+    "score_std": 144775.1008039632
+  }
+}

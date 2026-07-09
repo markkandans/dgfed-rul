@@ -1,0 +1,320 @@
+{
+  "config": {
+    "data_root": "./datasets/CMAPSS",
+    "subset": "FD004",
+    "window": 30,
+    "rul_cap": 125,
+    "n_conditions": 6,
+    "partition": "regime",
+    "max_clients": 12,
+    "inject_drift": true,
+    "drift_segments": 3,
+    "n_body_filters": 32,
+    "lstm_hidden": 64,
+    "latent_dim": 64,
+    "head_hidden": 32,
+    "dropout": 0.2,
+    "method": "dgfed",
+    "rounds": 200,
+    "clients_per_round": 0.6,
+    "local_epochs": 1,
+    "batch_size": 128,
+    "lr": 0.001,
+    "fedprox_mu": 0.01,
+    "central_epochs": 30,
+    "personalize_head": true,
+    "use_drift_detector": true,
+    "ph_delta": 0.005,
+    "ph_lambda": 5000.0,
+    "ph_alpha": 0.9999,
+    "event_trigger": true,
+    "trigger_alpha": 0.3,
+    "compress": true,
+    "topk_ratio": 0.1,
+    "quant_bits": 8,
+    "sensitivity_weighting": true,
+    "staleness_aware": true,
+    "drift_aware_agg": true,
+    "stale_tau0": 2.0,
+    "drift_boost": 1.5,
+    "clip_factor": 2.0,
+    "straggler_rate": 0.1,
+    "run_tag": "",
+    "seed": 2,
+    "device": "cuda",
+    "results_dir": "./results"
+  },
+  "runs": [
+    {
+      "rmse": 22.010101318359375,
+      "score": 101182.15625,
+      "per_client_rmse": [
+        24.851394653320312,
+        13.626511573791504,
+        25.086240768432617,
+        11.035136222839355,
+        24.958837509155273,
+        25.212270736694336
+      ],
+      "per_client_var": 36.39351261998753,
+      "worst_client_rmse": 25.212270736694336,
+      "retention_rmse_bins": [
+        17.606992721557617,
+        21.11748504638672,
+        22.480228424072266,
+        24.529094696044922,
+        23.65402603149414
+      ],
+      "seen_unseen": {
+        "seen_rmse": 12.75830364227295,
+        "unseen_rmse": 25.067333221435547,
+        "n_seen": 3341,
+        "n_unseen": 7467,
+        "per_client": [
+          {
+            "id": 0,
+            "n_seen": 9,
+            "n_unseen": 2695,
+            "seen_rmse": 23.478466033935547,
+            "unseen_rmse": 24.855852127075195
+          },
+          {
+            "id": 1,
+            "n_seen": 1624,
+            "n_unseen": 0,
+            "seen_rmse": 13.626511573791504
+          },
+          {
+            "id": 2,
+            "n_seen": 47,
+            "n_unseen": 1578,
+            "seen_rmse": 20.580331802368164,
+            "unseen_rmse": 25.208099365234375
+          },
+          {
+            "id": 3,
+            "n_seen": 1603,
+            "n_unseen": 0,
+            "seen_rmse": 11.035136222839355
+          },
+          {
+            "id": 4,
+            "n_seen": 22,
+            "n_unseen": 1602,
+            "seen_rmse": 19.014930725097656,
+            "unseen_rmse": 25.0306396484375
+          },
+          {
+            "id": 5,
+            "n_seen": 36,
+            "n_unseen": 1592,
+            "seen_rmse": 19.8991756439209,
+            "unseen_rmse": 25.319530487060547
+          }
+        ]
+      },
+      "total_MB_uploaded": 9.80687,
+      "mean_bytes_per_round": 49034.35,
+      "method": "dgfed",
+      "n_clients": 6,
+      "diagnostics": {
+        "rounds": 200,
+        "total_trained": 540,
+        "drift_fire_rate": 0.17777777777777778,
+        "skip_rate": 0.0,
+        "clip_rate": 0.0,
+        "mean_clip_scale": null,
+        "median_delta_norm": 0.9047020673751831,
+        "p90_delta_norm": 0.9662471652030944,
+        "mean_upload_bytes": 18160.87037037037,
+        "trigger_skipped_uploads": 0,
+        "trigger_bytes_saved_MB": 0.0
+      },
+      "diagnostics_csv": "./results/diag/dgfed_FD004_regime_seed0.csv",
+      "seed": 0
+    },
+    {
+      "rmse": 20.822362899780273,
+      "score": 129645.0859375,
+      "per_client_rmse": [
+        24.973417282104492,
+        21.334327697753906,
+        26.887130737304688,
+        19.90233039855957,
+        13.511406898498535,
+        9.7350435256958
+      ],
+      "per_client_var": 36.5334082695386,
+      "worst_client_rmse": 26.887130737304688,
+      "retention_rmse_bins": [
+        15.580039978027344,
+        17.97944450378418,
+        21.21450424194336,
+        24.945262908935547,
+        23.02025032043457
+      ],
+      "seen_unseen": {
+        "seen_rmse": 12.021169662475586,
+        "unseen_rmse": 23.77073097229004,
+        "n_seen": 3379,
+        "n_unseen": 7429,
+        "per_client": [
+          {
+            "id": 0,
+            "n_seen": 35,
+            "n_unseen": 2669,
+            "seen_rmse": 16.49215316772461,
+            "unseen_rmse": 25.065580368041992
+          },
+          {
+            "id": 1,
+            "n_seen": 58,
+            "n_unseen": 1566,
+            "seen_rmse": 19.209739685058594,
+            "unseen_rmse": 21.408967971801758
+          },
+          {
+            "id": 2,
+            "n_seen": 10,
+            "n_unseen": 1615,
+            "seen_rmse": 16.91828727722168,
+            "unseen_rmse": 26.937368392944336
+          },
+          {
+            "id": 3,
+            "n_seen": 24,
+            "n_unseen": 1579,
+            "seen_rmse": 12.496415138244629,
+            "unseen_rmse": 19.993741989135742
+          },
+          {
+            "id": 4,
+            "n_seen": 1624,
+            "n_unseen": 0,
+            "seen_rmse": 13.511406898498535
+          },
+          {
+            "id": 5,
+            "n_seen": 1628,
+            "n_unseen": 0,
+            "seen_rmse": 9.7350435256958
+          }
+        ]
+      },
+      "total_MB_uploaded": 9.95247,
+      "mean_bytes_per_round": 49762.35,
+      "method": "dgfed",
+      "n_clients": 6,
+      "diagnostics": {
+        "rounds": 200,
+        "total_trained": 551,
+        "drift_fire_rate": 0.18874773139745918,
+        "skip_rate": 0.0054446460980036296,
+        "clip_rate": 0.0,
+        "mean_clip_scale": null,
+        "median_delta_norm": 0.7918418645858765,
+        "p90_delta_norm": 0.8943652272224426,
+        "mean_upload_bytes": 18161.441605839416,
+        "trigger_skipped_uploads": 3,
+        "trigger_bytes_saved_MB": 0.054484324817518255
+      },
+      "diagnostics_csv": "./results/diag/dgfed_FD004_regime_seed1.csv",
+      "seed": 1
+    },
+    {
+      "rmse": 23.16202163696289,
+      "score": 133584.328125,
+      "per_client_rmse": [
+        25.661636352539062,
+        12.517251968383789,
+        15.617690086364746,
+        26.44087791442871,
+        26.97800064086914,
+        25.566865921020508
+      ],
+      "per_client_var": 33.53106425398329,
+      "worst_client_rmse": 26.97800064086914,
+      "retention_rmse_bins": [
+        16.849998474121094,
+        21.312244415283203,
+        23.15755271911621,
+        26.198068618774414,
+        26.874135971069336
+      ],
+      "seen_unseen": {
+        "seen_rmse": 12.997586250305176,
+        "unseen_rmse": 24.62277603149414,
+        "n_seen": 1725,
+        "n_unseen": 9083,
+        "per_client": [
+          {
+            "id": 0,
+            "n_seen": 9,
+            "n_unseen": 2695,
+            "seen_rmse": 18.91529655456543,
+            "unseen_rmse": 25.681196212768555
+          },
+          {
+            "id": 1,
+            "n_seen": 1624,
+            "n_unseen": 0,
+            "seen_rmse": 12.517251968383789
+          },
+          {
+            "id": 2,
+            "n_seen": 10,
+            "n_unseen": 1615,
+            "seen_rmse": 11.768863677978516,
+            "unseen_rmse": 15.638571739196777
+          },
+          {
+            "id": 3,
+            "n_seen": 24,
+            "n_unseen": 1579,
+            "seen_rmse": 11.169224739074707,
+            "unseen_rmse": 26.605453491210938
+          },
+          {
+            "id": 4,
+            "n_seen": 22,
+            "n_unseen": 1602,
+            "seen_rmse": 24.909608840942383,
+            "unseen_rmse": 27.00530242919922
+          },
+          {
+            "id": 5,
+            "n_seen": 36,
+            "n_unseen": 1592,
+            "seen_rmse": 20.893821716308594,
+            "unseen_rmse": 25.662700653076172
+          }
+        ]
+      },
+      "total_MB_uploaded": 10.04312,
+      "mean_bytes_per_round": 50215.6,
+      "method": "dgfed",
+      "n_clients": 6,
+      "diagnostics": {
+        "rounds": 200,
+        "total_trained": 553,
+        "drift_fire_rate": 0.20253164556962025,
+        "skip_rate": 0.0,
+        "clip_rate": 0.003616636528028933,
+        "mean_clip_scale": 0.9761226996749024,
+        "median_delta_norm": 1.0498346090316772,
+        "p90_delta_norm": 1.2311858534812927,
+        "mean_upload_bytes": 18161.15732368897,
+        "trigger_skipped_uploads": 0,
+        "trigger_bytes_saved_MB": 0.0
+      },
+      "diagnostics_csv": "./results/diag/dgfed_FD004_regime_seed2.csv",
+      "seed": 2
+    }
+  ],
+  "summary": {
+    "rmse_mean": 21.998161951700848,
+    "rmse_std": 0.9551989890334874,
+    "score_mean": 121470.5234375,
+    "score_std": 14435.899454809756
+  }
+}

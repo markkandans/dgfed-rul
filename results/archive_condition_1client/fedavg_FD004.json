@@ -1,0 +1,114 @@
+{
+  "config": {
+    "data_root": "./datasets/CMAPSS",
+    "subset": "FD004",
+    "window": 30,
+    "rul_cap": 125,
+    "n_conditions": 6,
+    "partition": "condition",
+    "max_clients": 12,
+    "inject_drift": true,
+    "drift_segments": 3,
+    "n_body_filters": 32,
+    "lstm_hidden": 64,
+    "latent_dim": 64,
+    "head_hidden": 32,
+    "dropout": 0.2,
+    "method": "fedavg",
+    "rounds": 200,
+    "clients_per_round": 0.6,
+    "local_epochs": 1,
+    "batch_size": 128,
+    "lr": 0.001,
+    "fedprox_mu": 0.0,
+    "central_epochs": 30,
+    "personalize_head": false,
+    "use_drift_detector": false,
+    "ph_delta": 0.005,
+    "ph_lambda": 50.0,
+    "ph_alpha": 0.9999,
+    "event_trigger": false,
+    "trigger_tau": 0.001,
+    "compress": false,
+    "topk_ratio": 0.1,
+    "quant_bits": 8,
+    "sensitivity_weighting": true,
+    "staleness_aware": false,
+    "drift_aware_agg": false,
+    "stale_tau0": 2.0,
+    "drift_boost": 1.5,
+    "divergence_clip": 5.0,
+    "straggler_rate": 0.1,
+    "seed": 2,
+    "device": "cuda",
+    "results_dir": "./results"
+  },
+  "runs": [
+    {
+      "rmse": 28.361000061035156,
+      "score": 203079.34375,
+      "per_client_rmse": [
+        28.361000061035156
+      ],
+      "per_client_var": 0.0,
+      "worst_client_rmse": 28.361000061035156,
+      "retention_rmse_bins": [
+        19.46504783630371,
+        27.671274185180664,
+        31.30258560180664,
+        33.6058349609375,
+        27.715280532836914
+      ],
+      "total_MB_uploaded": 27.449292,
+      "mean_bytes_per_round": 137246.46,
+      "method": "fedavg",
+      "seed": 0
+    },
+    {
+      "rmse": 45.786949157714844,
+      "score": 3514622.0,
+      "per_client_rmse": [
+        45.786949157714844
+      ],
+      "per_client_var": 0.0,
+      "worst_client_rmse": 45.786949157714844,
+      "retention_rmse_bins": [
+        27.485498428344727,
+        38.68497085571289,
+        45.24222183227539,
+        51.30836868286133,
+        59.594112396240234
+      ],
+      "total_MB_uploaded": 28.676076,
+      "mean_bytes_per_round": 143380.38,
+      "method": "fedavg",
+      "seed": 1
+    },
+    {
+      "rmse": 26.829496383666992,
+      "score": 171466.109375,
+      "per_client_rmse": [
+        26.829496383666992
+      ],
+      "per_client_var": 0.0,
+      "worst_client_rmse": 26.829496383666992,
+      "retention_rmse_bins": [
+        18.24734115600586,
+        26.158246994018555,
+        29.869613647460938,
+        32.239315032958984,
+        25.504934310913086
+      ],
+      "total_MB_uploaded": 27.295944,
+      "mean_bytes_per_round": 136479.72,
+      "method": "fedavg",
+      "seed": 2
+    }
+  ],
+  "summary": {
+    "rmse_mean": 33.659148534139,
+    "rmse_std": 8.59841213451077,
+    "score_mean": 1296389.1510416667,
+    "score_std": 1568580.5851778362
+  }
+}

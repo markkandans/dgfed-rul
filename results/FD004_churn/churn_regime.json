@@ -1,0 +1,88 @@
+{
+  "config": {
+    "data_root": "./datasets/CMAPSS",
+    "subset": "FD004",
+    "window": 30,
+    "rul_cap": 125,
+    "n_conditions": 6,
+    "partition": "regime",
+    "max_clients": 12,
+    "inject_drift": true,
+    "drift_segments": 3,
+    "n_body_filters": 32,
+    "lstm_hidden": 64,
+    "latent_dim": 64,
+    "head_hidden": 32,
+    "dropout": 0.2,
+    "method": "dgfed",
+    "rounds": 200,
+    "clients_per_round": 0.6,
+    "local_epochs": 1,
+    "batch_size": 128,
+    "lr": 0.001,
+    "fedprox_mu": 0.01,
+    "central_epochs": 30,
+    "personalize_head": true,
+    "use_drift_detector": true,
+    "ph_delta": 0.005,
+    "ph_lambda": 5000.0,
+    "ph_alpha": 0.9999,
+    "event_trigger": true,
+    "trigger_alpha": 0.3,
+    "compress": true,
+    "topk_ratio": 0.1,
+    "quant_bits": 8,
+    "sensitivity_weighting": true,
+    "staleness_aware": true,
+    "drift_aware_agg": true,
+    "stale_tau0": 2.0,
+    "drift_boost": 1.5,
+    "clip_factor": 2.0,
+    "straggler_rate": 0.1,
+    "run_tag": "churn",
+    "seed": 2,
+    "device": "cuda",
+    "results_dir": "./results"
+  },
+  "runs": [
+    {
+      "seed": 0,
+      "global_body": {
+        "rmse": 22.010101318359375,
+        "seen_rmse": 12.75830364227295,
+        "unseen_rmse": 25.067333221435547
+      },
+      "own_body": {
+        "rmse": 24.024803161621094,
+        "seen_rmse": 16.77648162841797,
+        "unseen_rmse": 26.636741638183594
+      }
+    },
+    {
+      "seed": 1,
+      "global_body": {
+        "rmse": 20.822362899780273,
+        "seen_rmse": 12.021169662475586,
+        "unseen_rmse": 23.77073097229004
+      },
+      "own_body": {
+        "rmse": 22.918251037597656,
+        "seen_rmse": 14.875946998596191,
+        "unseen_rmse": 25.758411407470703
+      }
+    },
+    {
+      "seed": 2,
+      "global_body": {
+        "rmse": 23.16202163696289,
+        "seen_rmse": 12.997586250305176,
+        "unseen_rmse": 24.62277603149414
+      },
+      "own_body": {
+        "rmse": 24.82486915588379,
+        "seen_rmse": 14.829983711242676,
+        "unseen_rmse": 26.29726791381836
+      }
+    }
+  ]
+}
