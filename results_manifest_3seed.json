@@ -1,0 +1,107 @@
+{
+  "tables": {
+    "method_table_unit": {
+      "description": "Main method comparison, FD004 unit partition. Baselines (fedavg/fedprox/local/central) from the v2 suite; 'proposed' = calibrated no_personal_head row; '+personal_head' = calibrated full row.",
+      "sources": {
+        "results/FD004_unit/fedavg_FD004.json": "97af814cb54fb8342f11859332032b59651f22fe",
+        "results/FD004_unit/fedprox_FD004.json": "0665eb667ceef8545b96359f728eda7bf3bfd1c7",
+        "results/FD004_unit/local_FD004.json": "d7b523dc9ef9fb4955751f45659d8ff4f93fd8e4",
+        "results/FD004_unit/central_FD004.json": "299223ad2bc0f0341b36f03dab5cafdbe56777fb",
+        "results/FD004_calibrated/ablation_unit.json": "944b6f321505a5de3004c7aeef618b05371aa1f2"
+      }
+    },
+    "method_table_regime": {
+      "description": "Main method comparison, FD004 regime partition (same layout).",
+      "sources": {
+        "results/FD004_regime/fedavg_FD004.json": "53bf4809fd3076decaff328eb5668c7d436abdf6",
+        "results/FD004_regime/fedprox_FD004.json": "fa855243140fa95ff519bcf6345430fb74287fe2",
+        "results/FD004_regime/local_FD004.json": "4adddc04e5dc296627bf37d9727c8d745a7304ed",
+        "results/FD004_regime/central_FD004.json": "4d9393c3c11f8a6a2cecaa7b202a229b92e6fcf7",
+        "results/FD004_calibrated/ablation_regime.json": "34063389ec400944fa52dea9656b9f791f22d143"
+      }
+    },
+    "rebased_ablation_unit": {
+      "description": "6-row rebased ablation, unit: proposed & +personal_head reused from the calibrated ablation; four proposed_* arms fresh.",
+      "sources": {
+        "results/FD004_calibrated/ablation_unit.json": "944b6f321505a5de3004c7aeef618b05371aa1f2",
+        "results/FD004_rebased/ablation_unit.json": "9adc4f34e9fe5e38aa43b1c17e5dad026e721a05"
+      }
+    },
+    "rebased_ablation_regime": {
+      "description": "6-row rebased ablation, regime (same layout).",
+      "sources": {
+        "results/FD004_calibrated/ablation_regime.json": "34063389ec400944fa52dea9656b9f791f22d143",
+        "results/FD004_rebased/ablation_regime.json": "c2331d81a2d9b6bbe14cb1a1a0920cb4935630ef"
+      }
+    },
+    "ph_lambda_sweep": {
+      "description": "Page-Hinkley lambda calibration sweep (50-round dgfed, FD004 unit); chosen ph_lambda=5000.",
+      "sources": {
+        "results/ph_sweep_FD004_unit.json": "f951494a7ffa09a327eeed1871da5ad9ec74fa33"
+      }
+    },
+    "mechanism_seen_unseen": {
+      "description": "Seen/unseen RUL stratification for full vs no_personal_head (calibrated runs; 'seen_unseen' field per seed).",
+      "sources": {
+        "results/FD004_calibrated/ablation_unit.json": "944b6f321505a5de3004c7aeef618b05371aa1f2",
+        "results/FD004_calibrated/ablation_regime.json": "34063389ec400944fa52dea9656b9f791f22d143"
+      }
+    },
+    "churn_diagnostic": {
+      "description": "Personal-head arm evaluated with final global body vs each client's own final local body (head-body mismatch mechanism).",
+      "sources": {
+        "results/FD004_churn/churn_unit.json": "755df15da15dab28a8001ea1c41a5edd29daa581",
+        "results/FD004_churn/churn_regime.json": "2ba9b3d2ce37f5b534ad10dcd7871cc771fa7340"
+      }
+    },
+    "method_table_fd002_unit": {
+      "description": "Held-out FD002 confirmation, unit partition: proposed (dgfed, personalize_head=False) + baselines, frozen FD004 config.",
+      "sources": {
+        "results/FD002_unit/proposed_FD002.json": "25bd244ae53979278caac1c7deaec29da636370e",
+        "results/FD002_unit/fedavg_FD002.json": "09b4cd48e45f281080697b4313681d4e9870a473",
+        "results/FD002_unit/fedprox_FD002.json": "bbf8e949e8f154317019d95c5a468106b0b64142",
+        "results/FD002_unit/local_FD002.json": "3e1c6b0003f8ec24d7ecebc9d72037a41d175fd2",
+        "results/FD002_unit/central_FD002.json": "09197931df1727a29c145237cbb879415e827110"
+      }
+    },
+    "method_table_fd002_regime": {
+      "description": "Held-out FD002 confirmation, regime partition (same layout).",
+      "sources": {
+        "results/FD002_regime/proposed_FD002.json": "fb999e4994dd5794631ee960c7a879269af5910f",
+        "results/FD002_regime/fedavg_FD002.json": "ee35991c6a41b6cf124d286e4005a5fba32a19e9",
+        "results/FD002_regime/fedprox_FD002.json": "8711ba78596d23c2922a2418888065dc32a091eb",
+        "results/FD002_regime/local_FD002.json": "09d67f5da58be5efedf08089981852d345386f0b",
+        "results/FD002_regime/central_FD002.json": "b1cdcac4743011b53f1179b1272373f3293794d3"
+      }
+    },
+    "paired_seed_analysis": {
+      "description": "Per-seed paired RMSE deltas of each FD004 ablation arm vs proposed (same seed & partition), with sign patterns.",
+      "sources": {
+        "results/analysis_paired_seed_FD004.json": "85b0851e9eba479ec98167c5908607be9033d595"
+      }
+    },
+    "data_scale_analysis": {
+      "description": "Per-client personal-head penalty vs training-window count (FD004). Per-client RMSEs from deterministic re-executions of the calibrated arms (verified to reproduce calibrated per-seed RMSE exactly).",
+      "sources": {
+        "results/analysis_data_scale_FD004.json": "65c048fea4275c79e38af2dc37c27acba3384835",
+        "results/FD004_perclient/full_unit.json": "df894c1f6572cd12a4b445c77de46bca2f1e68b7",
+        "results/FD004_perclient/proposed_unit.json": "ea44793532313f67e7f8ec8841e0f288b1d5e174",
+        "results/FD004_perclient/full_regime.json": "b590c6d28e7066d663805d6bf7d0821649149409",
+        "results/FD004_perclient/proposed_regime.json": "870c85e2fd5657fc6279c60e4214eca9fe37b071"
+      }
+    },
+    "signed_error_check": {
+      "description": "Mean signed error (pred - true) for proposed and FedAvg on FD002-unit from deterministic re-executions (per-seed RMSEs verified against the pinned runs).",
+      "sources": {
+        "results/analysis_signed_error_FD002unit.json": "7997e5afab991d17d8be43d96c6974d91ed8457c"
+      }
+    },
+    "divergence_study": {
+      "description": "8-seed per-seed RMSE for full and no_event_trigger (unit): seeds 0-2 from the calibrated ablation, seeds 3-7 from the extension file. 0/8 diverged.",
+      "sources": {
+        "results/FD004_calibrated/ablation_unit.json": "944b6f321505a5de3004c7aeef618b05371aa1f2",
+        "results/FD004_calibrated/ablation_unit_seeds3to7.json": "b78162843a96be848aca0c40f8cedb53e93bc9fc"
+      }
+    }
+  }
+}

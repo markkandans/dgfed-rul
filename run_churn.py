@@ -82,6 +82,7 @@ def main():
     p.add_argument("--rounds", type=int, default=200)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--seeds", type=int, default=3)
+    p.add_argument("--out", default=None, help="output JSON path (default: results/FD004_churn/churn_<partition>.json)")
     args = p.parse_args()
 
     runs = []
@@ -103,9 +104,13 @@ def main():
             f"seen={res['own_body']['seen_rmse']:.3f}"
         )
 
-    out_dir = os.path.join(cfg.results_dir, "FD004_churn")
-    os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, f"churn_{args.partition}.json")
+    if args.out:
+        path = args.out
+        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    else:
+        out_dir = os.path.join(cfg.results_dir, "FD004_churn")
+        os.makedirs(out_dir, exist_ok=True)
+        path = os.path.join(out_dir, f"churn_{args.partition}.json")
     with open(path, "w") as f:
         json.dump({"config": cfg.to_dict(), "runs": runs}, f, indent=2)
     print(f"[saved] {path}")
