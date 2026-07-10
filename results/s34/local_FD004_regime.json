@@ -1,0 +1,127 @@
+{
+  "config": {
+    "data_root": "./datasets/CMAPSS",
+    "subset": "FD004",
+    "window": 30,
+    "rul_cap": 125,
+    "n_conditions": 6,
+    "partition": "regime",
+    "max_clients": 12,
+    "inject_drift": true,
+    "drift_segments": 3,
+    "n_body_filters": 32,
+    "lstm_hidden": 64,
+    "latent_dim": 64,
+    "head_hidden": 32,
+    "dropout": 0.2,
+    "method": "local",
+    "rounds": 200,
+    "clients_per_round": 0.6,
+    "local_epochs": 1,
+    "batch_size": 128,
+    "lr": 0.001,
+    "fedprox_mu": 0.01,
+    "central_epochs": 30,
+    "personalize_head": true,
+    "use_drift_detector": true,
+    "ph_delta": 0.005,
+    "ph_lambda": 5000.0,
+    "ph_alpha": 0.9999,
+    "event_trigger": true,
+    "trigger_alpha": 0.3,
+    "compress": true,
+    "topk_ratio": 0.1,
+    "quant_bits": 8,
+    "sensitivity_weighting": true,
+    "staleness_aware": true,
+    "drift_aware_agg": true,
+    "stale_tau0": 2.0,
+    "drift_boost": 1.5,
+    "clip_factor": 2.0,
+    "straggler_rate": 0.1,
+    "run_tag": "",
+    "seed": 4,
+    "device": "cuda",
+    "results_dir": "./results"
+  },
+  "runs": [
+    {
+      "rmse": 31.29938507080078,
+      "score": 845557.375,
+      "per_client_rmse": [
+        38.364845275878906,
+        12.740835189819336,
+        48.36693572998047,
+        24.721248626708984,
+        21.67983055114746,
+        22.169145584106445
+      ],
+      "per_client_var": 139.96291818074283,
+      "worst_client_rmse": 48.36693572998047,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "n_clients": 6,
+      "seed": 1
+    },
+    {
+      "rmse": 33.01520919799805,
+      "score": 502671.15625,
+      "per_client_rmse": [
+        26.366018295288086,
+        49.43414306640625,
+        43.52939987182617,
+        24.493892669677734,
+        23.727710723876953,
+        24.501201629638672
+      ],
+      "per_client_var": 108.2703487995755,
+      "worst_client_rmse": 49.43414306640625,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "n_clients": 6,
+      "seed": 2
+    },
+    {
+      "rmse": 47.411293029785156,
+      "score": 17866880.0,
+      "per_client_rmse": [
+        23.214815139770508,
+        25.043437957763672,
+        66.65937805175781,
+        16.673446655273438,
+        81.8145523071289,
+        44.89986038208008
+      ],
+      "per_client_var": 579.484771223247,
+      "worst_client_rmse": 81.8145523071289,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "n_clients": 6,
+      "seed": 3
+    },
+    {
+      "rmse": 46.87516403198242,
+      "score": 11276450.0,
+      "per_client_rmse": [
+        43.002342224121094,
+        23.189189910888672,
+        18.32598114013672,
+        44.0611686706543,
+        81.57232666015625,
+        45.77162551879883
+      ],
+      "per_client_var": 416.19808966916145,
+      "worst_client_rmse": 81.57232666015625,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "n_clients": 6,
+      "seed": 4
+    }
+  ],
+  "summary": {
+    "rmse_mean": 39.6502628326416,
+    "rmse_std": 7.519871727446798,
+    "score_mean": 7622889.6328125,
+    "score_std": 7330033.862242408
+  }
+}

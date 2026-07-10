@@ -81,7 +81,11 @@
       "Bash(git config *)",
       "Bash(git add *)",
       "Bash(git commit -q -m '3-seed submission candidate: code, results, manifest, paper sources *)",
-      "Bash(git tag *)"
+      "Bash(git tag *)",
+      "Bash(chmod +x run_s34.sh)",
+      "Bash(./run_s34.sh)",
+      "Bash(git commit -q -m 'Add 5-seed extension plumbing: s34 runner, out-path args, micro-study scripts *)",
+      "Bash(git commit -q -m '5-seed extension: first FD004-unit s34 results \\(proposed, fedavg, fedprox\\) *)"
     ]
   }
 }
