@@ -1,0 +1,352 @@
+{
+  "config": {
+    "data_root": "./datasets/CMAPSS",
+    "subset": "FD004",
+    "window": 30,
+    "rul_cap": 125,
+    "n_conditions": 6,
+    "partition": "regime",
+    "max_clients": 12,
+    "inject_drift": true,
+    "drift_segments": 3,
+    "n_body_filters": 32,
+    "lstm_hidden": 64,
+    "latent_dim": 64,
+    "head_hidden": 32,
+    "dropout": 0.2,
+    "method": "fedavg",
+    "rounds": 200,
+    "clients_per_round": 0.6,
+    "local_epochs": 1,
+    "batch_size": 128,
+    "lr": 0.001,
+    "fedprox_mu": 0.0,
+    "central_epochs": 30,
+    "personalize_head": false,
+    "use_drift_detector": false,
+    "ph_delta": 0.005,
+    "ph_lambda": 50.0,
+    "ph_alpha": 0.9999,
+    "event_trigger": false,
+    "trigger_alpha": 0.3,
+    "compress": false,
+    "topk_ratio": 0.1,
+    "quant_bits": 8,
+    "sensitivity_weighting": true,
+    "staleness_aware": false,
+    "drift_aware_agg": false,
+    "stale_tau0": 2.0,
+    "drift_boost": 1.5,
+    "clip_factor": 2.0,
+    "straggler_rate": 0.1,
+    "run_tag": "",
+    "seed": 2,
+    "device": "cuda",
+    "results_dir": "./results"
+  },
+  "runs": [
+    {
+      "rmse": 20.900714874267578,
+      "score": 83253.234375,
+      "per_client_rmse": [
+        24.171470642089844,
+        11.082895278930664,
+        23.73665428161621,
+        8.120613098144531,
+        24.54793930053711,
+        24.05645179748535
+      ],
+      "per_client_var": 47.67969236945252,
+      "worst_client_rmse": 24.54793930053711,
+      "retention_rmse_bins": [
+        17.494787216186523,
+        20.99358558654785,
+        21.485904693603516,
+        22.42848014831543,
+        21.745458602905273
+      ],
+      "total_MB_uploaded": 82.80792,
+      "mean_bytes_per_round": 414039.6,
+      "method": "fedavg",
+      "n_clients": 6,
+      "diagnostics": {
+        "rounds": 200,
+        "total_trained": 540,
+        "drift_fire_rate": 0.0,
+        "skip_rate": 0.0,
+        "clip_rate": 0.0,
+        "mean_clip_scale": null,
+        "median_delta_norm": 0.9031699001789093,
+        "p90_delta_norm": 0.9688110947608948,
+        "mean_upload_bytes": 153348.0,
+        "trigger_skipped_uploads": 0,
+        "trigger_bytes_saved_MB": 0.0
+      },
+      "diagnostics_csv": "./results/diag/fedavg_FD004_regime_seed0.csv",
+      "seed": 0
+    },
+    {
+      "rmse": 16.576927185058594,
+      "score": 52770.03515625,
+      "per_client_rmse": [
+        17.10015869140625,
+        17.632614135742188,
+        22.146526336669922,
+        17.836084365844727,
+        12.133317947387695,
+        8.878216743469238
+      ],
+      "per_client_var": 18.44756129572117,
+      "worst_client_rmse": 22.146526336669922,
+      "retention_rmse_bins": [
+        13.019378662109375,
+        15.734415054321289,
+        17.848173141479492,
+        18.762266159057617,
+        16.92380142211914
+      ],
+      "total_MB_uploaded": 84.494748,
+      "mean_bytes_per_round": 422473.74,
+      "method": "fedavg",
+      "n_clients": 6,
+      "diagnostics": {
+        "rounds": 200,
+        "total_trained": 551,
+        "drift_fire_rate": 0.0,
+        "skip_rate": 0.0,
+        "clip_rate": 0.0,
+        "mean_clip_scale": null,
+        "median_delta_norm": 0.9839311242103577,
+        "p90_delta_norm": 1.102183723449707,
+        "mean_upload_bytes": 153348.0,
+        "trigger_skipped_uploads": 0,
+        "trigger_bytes_saved_MB": 0.0
+      },
+      "diagnostics_csv": "./results/diag/fedavg_FD004_regime_seed1.csv",
+      "seed": 1
+    },
+    {
+      "rmse": 22.88631820678711,
+      "score": 127861.515625,
+      "per_client_rmse": [
+        26.984540939331055,
+        7.327495098114014,
+        10.314302444458008,
+        25.658287048339844,
+        27.241474151611328,
+        26.825538635253906
+      ],
+      "per_client_var": 71.84599027050054,
+      "worst_client_rmse": 27.241474151611328,
+      "retention_rmse_bins": [
+        16.1059627532959,
+        21.579137802124023,
+        23.708351135253906,
+        25.793270111083984,
+        25.82518196105957
+      ],
+      "total_MB_uploaded": 84.801444,
+      "mean_bytes_per_round": 424007.22,
+      "method": "fedavg",
+      "n_clients": 6,
+      "diagnostics": {
+        "rounds": 200,
+        "total_trained": 553,
+        "drift_fire_rate": 0.0,
+        "skip_rate": 0.0,
+        "clip_rate": 0.0,
+        "mean_clip_scale": null,
+        "median_delta_norm": 0.9672871828079224,
+        "p90_delta_norm": 1.0952319860458375,
+        "mean_upload_bytes": 153348.0,
+        "trigger_skipped_uploads": 0,
+        "trigger_bytes_saved_MB": 0.0
+      },
+      "diagnostics_csv": "./results/diag/fedavg_FD004_regime_seed2.csv",
+      "seed": 2
+    },
+    {
+      "rmse": 14.73017406463623,
+      "score": 38513.8359375,
+      "per_client_rmse": [
+        15.707984924316406,
+        17.69815444946289,
+        15.859713554382324,
+        12.584883689880371,
+        11.743426322937012,
+        13.176478385925293
+      ],
+      "per_client_var": 4.424258537405168,
+      "worst_client_rmse": 17.69815444946289,
+      "retention_rmse_bins": [
+        13.346301078796387,
+        14.166263580322266,
+        14.884295463562012,
+        15.617473602294922,
+        15.515002250671387
+      ],
+      "seen_unseen": {
+        "seen_rmse": 14.607967376708984,
+        "unseen_rmse": 14.812835693359375,
+        "n_seen": 4379,
+        "n_unseen": 6429,
+        "per_client": [
+          {
+            "id": 0,
+            "n_seen": 2704,
+            "n_unseen": 0,
+            "seen_rmse": 15.707984924316406
+          },
+          {
+            "id": 1,
+            "n_seen": 58,
+            "n_unseen": 1566,
+            "seen_rmse": 14.393085479736328,
+            "unseen_rmse": 17.80879020690918
+          },
+          {
+            "id": 2,
+            "n_seen": 10,
+            "n_unseen": 1615,
+            "seen_rmse": 10.861688613891602,
+            "unseen_rmse": 15.885763168334961
+          },
+          {
+            "id": 3,
+            "n_seen": 1603,
+            "n_unseen": 0,
+            "seen_rmse": 12.584883689880371
+          },
+          {
+            "id": 4,
+            "n_seen": 3,
+            "n_unseen": 1621,
+            "seen_rmse": 5.419000625610352,
+            "unseen_rmse": 11.751976013183594
+          },
+          {
+            "id": 5,
+            "n_seen": 1,
+            "n_unseen": 1627,
+            "seen_rmse": 9.712879180908203,
+            "unseen_rmse": 13.178326606750488
+          }
+        ]
+      },
+      "total_MB_uploaded": 82.501224,
+      "mean_bytes_per_round": 412506.12,
+      "method": "fedavg",
+      "n_clients": 6,
+      "diagnostics": {
+        "rounds": 200,
+        "total_trained": 538,
+        "drift_fire_rate": 0.0,
+        "skip_rate": 0.0,
+        "clip_rate": 0.0,
+        "mean_clip_scale": null,
+        "median_delta_norm": 1.0356080830097198,
+        "p90_delta_norm": 1.1245697438716888,
+        "mean_upload_bytes": 153348.0,
+        "trigger_skipped_uploads": 0,
+        "trigger_bytes_saved_MB": 0.0
+      },
+      "diagnostics_csv": "./results/diag/fedavg_FD004_regime_seed3.csv",
+      "seed": 3
+    },
+    {
+      "rmse": 24.783695220947266,
+      "score": 334607.34375,
+      "per_client_rmse": [
+        29.07302474975586,
+        20.11258316040039,
+        7.5830206871032715,
+        27.335092544555664,
+        26.43703269958496,
+        27.9290828704834
+      ],
+      "per_client_var": 56.29455745895033,
+      "worst_client_rmse": 29.07302474975586,
+      "retention_rmse_bins": [
+        16.371307373046875,
+        19.423418045043945,
+        22.59775733947754,
+        27.825471878051758,
+        33.798255920410156
+      ],
+      "seen_unseen": {
+        "seen_rmse": 8.328582763671875,
+        "unseen_rmse": 26.836875915527344,
+        "n_seen": 1760,
+        "n_unseen": 9048,
+        "per_client": [
+          {
+            "id": 0,
+            "n_seen": 35,
+            "n_unseen": 2669,
+            "seen_rmse": 14.226226806640625,
+            "unseen_rmse": 29.2176456451416
+          },
+          {
+            "id": 1,
+            "n_seen": 58,
+            "n_unseen": 1566,
+            "seen_rmse": 13.364623069763184,
+            "unseen_rmse": 20.319517135620117
+          },
+          {
+            "id": 2,
+            "n_seen": 1625,
+            "n_unseen": 0,
+            "seen_rmse": 7.5830206871032715
+          },
+          {
+            "id": 3,
+            "n_seen": 38,
+            "n_unseen": 1565,
+            "seen_rmse": 16.60643768310547,
+            "unseen_rmse": 27.543678283691406
+          },
+          {
+            "id": 4,
+            "n_seen": 3,
+            "n_unseen": 1621,
+            "seen_rmse": 13.643074989318848,
+            "unseen_rmse": 26.454975128173828
+          },
+          {
+            "id": 5,
+            "n_seen": 1,
+            "n_unseen": 1627,
+            "seen_rmse": 12.687725067138672,
+            "unseen_rmse": 27.935894012451172
+          }
+        ]
+      },
+      "total_MB_uploaded": 83.57466,
+      "mean_bytes_per_round": 417873.3,
+      "method": "fedavg",
+      "n_clients": 6,
+      "diagnostics": {
+        "rounds": 200,
+        "total_trained": 545,
+        "drift_fire_rate": 0.0,
+        "skip_rate": 0.0,
+        "clip_rate": 0.0,
+        "mean_clip_scale": null,
+        "median_delta_norm": 0.9812474250793457,
+        "p90_delta_norm": 1.1305481731891631,
+        "mean_upload_bytes": 153348.0,
+        "trigger_skipped_uploads": 0,
+        "trigger_bytes_saved_MB": 0.0
+      },
+      "diagnostics_csv": "./results/diag/fedavg_FD004_regime_seed4.csv",
+      "seed": 4
+    }
+  ],
+  "summary": {
+    "rmse_mean": 19.975565910339355,
+    "rmse_std": 3.7818346818497264,
+    "score_mean": 127401.19296875,
+    "score_std": 108031.86106233718
+  }
+}

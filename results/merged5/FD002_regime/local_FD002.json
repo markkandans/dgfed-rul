@@ -1,0 +1,145 @@
+{
+  "config": {
+    "data_root": "./datasets/CMAPSS",
+    "subset": "FD002",
+    "window": 30,
+    "rul_cap": 125,
+    "n_conditions": 6,
+    "partition": "regime",
+    "max_clients": 12,
+    "inject_drift": true,
+    "drift_segments": 3,
+    "n_body_filters": 32,
+    "lstm_hidden": 64,
+    "latent_dim": 64,
+    "head_hidden": 32,
+    "dropout": 0.2,
+    "method": "local",
+    "rounds": 200,
+    "clients_per_round": 0.6,
+    "local_epochs": 1,
+    "batch_size": 128,
+    "lr": 0.001,
+    "fedprox_mu": 0.01,
+    "central_epochs": 30,
+    "personalize_head": true,
+    "use_drift_detector": true,
+    "ph_delta": 0.005,
+    "ph_lambda": 5000.0,
+    "ph_alpha": 0.9999,
+    "event_trigger": true,
+    "trigger_alpha": 0.3,
+    "compress": true,
+    "topk_ratio": 0.1,
+    "quant_bits": 8,
+    "sensitivity_weighting": true,
+    "staleness_aware": true,
+    "drift_aware_agg": true,
+    "stale_tau0": 2.0,
+    "drift_boost": 1.5,
+    "clip_factor": 2.0,
+    "straggler_rate": 0.1,
+    "run_tag": "",
+    "seed": 0,
+    "device": "cuda",
+    "results_dir": "./results"
+  },
+  "runs": [
+    {
+      "rmse": 30.057144165039062,
+      "score": 231709.328125,
+      "per_client_rmse": [
+        30.20004653930664,
+        31.665203094482422,
+        31.028263092041016,
+        29.497379302978516,
+        30.24509048461914,
+        27.447649002075195
+      ],
+      "per_client_var": 1.7827119620808134,
+      "worst_client_rmse": 31.665203094482422,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "n_clients": 6,
+      "seed": 0
+    },
+    {
+      "rmse": 38.37004470825195,
+      "score": 4887478.0,
+      "per_client_rmse": [
+        28.76438331604004,
+        11.596002578735352,
+        77.23014068603516,
+        31.302209854125977,
+        25.815486907958984,
+        26.412921905517578
+      ],
+      "per_client_var": 421.4404376174006,
+      "worst_client_rmse": 77.23014068603516,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "n_clients": 6,
+      "seed": 1
+    },
+    {
+      "rmse": 40.797603607177734,
+      "score": 5177009.5,
+      "per_client_rmse": [
+        28.26445770263672,
+        33.11235427856445,
+        77.73924255371094,
+        30.75162124633789,
+        29.61237144470215,
+        28.522775650024414
+      ],
+      "per_client_var": 318.4310584424234,
+      "worst_client_rmse": 77.73924255371094,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "n_clients": 6,
+      "seed": 2
+    },
+    {
+      "rmse": 56.69493865966797,
+      "score": 16557475.0,
+      "per_client_rmse": [
+        27.225305557250977,
+        27.685855865478516,
+        79.19140625,
+        28.873010635375977,
+        79.25587463378906,
+        77.65785217285156
+      ],
+      "per_client_var": 645.0046430490511,
+      "worst_client_rmse": 79.25587463378906,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "n_clients": 6,
+      "seed": 3
+    },
+    {
+      "rmse": 42.291751861572266,
+      "score": 5368971.5,
+      "per_client_rmse": [
+        32.37329864501953,
+        27.889263153076172,
+        26.162670135498047,
+        26.21413803100586,
+        77.2459487915039,
+        45.20154571533203
+      ],
+      "per_client_var": 332.775306271396,
+      "worst_client_rmse": 77.2459487915039,
+      "method": "local",
+      "total_MB_uploaded": 0.0,
+      "n_clients": 6,
+      "seed": 4
+    }
+  ],
+  "summary": {
+    "rmse_mean": 41.642296600341794,
+    "rmse_std": 8.632968443701415,
+    "score_mean": 6444528.665625,
+    "score_std": 5404787.553816337
+  }
+}

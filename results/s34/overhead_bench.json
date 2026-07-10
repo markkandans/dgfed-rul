@@ -1,0 +1,18 @@
+{
+  "proposed": {
+    "client_rounds": 124,
+    "mean_s_per_client_round": 1.0517523380258353,
+    "mean_s_drift_check": 0.07580671743245705,
+    "mean_s_compression": 0.0011054665559310126,
+    "mean_s_local_training": 0.9748401540374473,
+    "total_wall_s_20_rounds": 130.46060508297523
+  },
+  "fedavg": {
+    "client_rounds": 124,
+    "mean_s_per_client_round": 0.9948152954091183,
+    "mean_s_drift_check": 2.372314244688999e-06,
+    "mean_s_compression": 3.0431105950546842e-05,
+    "mean_s_local_training": 0.994782491988923,
+    "total_wall_s_20_rounds": 123.37789987499127
+  }
+}

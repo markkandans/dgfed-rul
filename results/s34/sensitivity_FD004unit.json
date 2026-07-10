@@ -1,0 +1,34 @@
+{
+  "trigger_alpha=0.1": {
+    "rmse": 22.784029006958008,
+    "skip_rate": 0.0,
+    "drift_fire_rate": 0.06902086677367576
+  },
+  "trigger_alpha=0.3": {
+    "rmse": 23.95212173461914,
+    "skip_rate": 0.004815409309791332,
+    "drift_fire_rate": 0.08186195826645265,
+    "note": "base"
+  },
+  "trigger_alpha=0.5": {
+    "rmse": 25.38003921508789,
+    "skip_rate": 0.05457463884430177,
+    "drift_fire_rate": 0.0754414125200642
+  },
+  "drift_boost=1": {
+    "rmse": 23.373804092407227,
+    "skip_rate": 0.006420545746388443,
+    "drift_fire_rate": 0.07223113964686999
+  },
+  "drift_boost=1.5": {
+    "rmse": 23.95212173461914,
+    "skip_rate": 0.004815409309791332,
+    "drift_fire_rate": 0.08186195826645265,
+    "note": "base (shared run)"
+  },
+  "drift_boost=2": {
+    "rmse": 23.794292449951172,
+    "skip_rate": 0.006420545746388443,
+    "drift_fire_rate": 0.0754414125200642
+  }
+}

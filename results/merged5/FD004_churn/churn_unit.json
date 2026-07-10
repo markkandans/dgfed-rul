@@ -1,0 +1,114 @@
+{
+  "config": {
+    "data_root": "./datasets/CMAPSS",
+    "subset": "FD004",
+    "window": 30,
+    "rul_cap": 125,
+    "n_conditions": 6,
+    "partition": "unit",
+    "max_clients": 12,
+    "inject_drift": true,
+    "drift_segments": 3,
+    "n_body_filters": 32,
+    "lstm_hidden": 64,
+    "latent_dim": 64,
+    "head_hidden": 32,
+    "dropout": 0.2,
+    "method": "dgfed",
+    "rounds": 200,
+    "clients_per_round": 0.6,
+    "local_epochs": 1,
+    "batch_size": 128,
+    "lr": 0.001,
+    "fedprox_mu": 0.01,
+    "central_epochs": 30,
+    "personalize_head": true,
+    "use_drift_detector": true,
+    "ph_delta": 0.005,
+    "ph_lambda": 5000.0,
+    "ph_alpha": 0.9999,
+    "event_trigger": true,
+    "trigger_alpha": 0.3,
+    "compress": true,
+    "topk_ratio": 0.1,
+    "quant_bits": 8,
+    "sensitivity_weighting": true,
+    "staleness_aware": true,
+    "drift_aware_agg": true,
+    "stale_tau0": 2.0,
+    "drift_boost": 1.5,
+    "clip_factor": 2.0,
+    "straggler_rate": 0.1,
+    "run_tag": "churn",
+    "seed": 2,
+    "device": "cuda",
+    "results_dir": "./results"
+  },
+  "runs": [
+    {
+      "seed": 0,
+      "global_body": {
+        "rmse": 23.500789642333984,
+        "seen_rmse": 24.894319534301758,
+        "unseen_rmse": 22.402347564697266
+      },
+      "own_body": {
+        "rmse": 24.701406478881836,
+        "seen_rmse": 24.850482940673828,
+        "unseen_rmse": 24.589359283447266
+      }
+    },
+    {
+      "seed": 1,
+      "global_body": {
+        "rmse": 23.80569076538086,
+        "seen_rmse": 17.496063232421875,
+        "unseen_rmse": 26.382843017578125
+      },
+      "own_body": {
+        "rmse": 29.428253173828125,
+        "seen_rmse": 18.863420486450195,
+        "unseen_rmse": 33.45515441894531
+      }
+    },
+    {
+      "seed": 2,
+      "global_body": {
+        "rmse": 25.029489517211914,
+        "seen_rmse": 22.929109573364258,
+        "unseen_rmse": 25.48188018798828
+      },
+      "own_body": {
+        "rmse": 29.599491119384766,
+        "seen_rmse": 23.845043182373047,
+        "unseen_rmse": 30.755422592163086
+      }
+    },
+    {
+      "seed": 3,
+      "global_body": {
+        "rmse": 21.71886444091797,
+        "seen_rmse": 16.736324310302734,
+        "unseen_rmse": 23.877614974975586
+      },
+      "own_body": {
+        "rmse": 25.388965606689453,
+        "seen_rmse": 21.938919067382812,
+        "unseen_rmse": 26.990400314331055
+      }
+    },
+    {
+      "seed": 4,
+      "global_body": {
+        "rmse": 34.958003997802734,
+        "seen_rmse": 19.98018455505371,
+        "unseen_rmse": 37.677730560302734
+      },
+      "own_body": {
+        "rmse": 32.48297119140625,
+        "seen_rmse": 19.24032211303711,
+        "unseen_rmse": 34.92256546020508
+      }
+    }
+  ]
+}

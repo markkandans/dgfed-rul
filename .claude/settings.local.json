@@ -86,7 +86,9 @@
       "Bash(./run_s34.sh)",
       "Bash(git commit -q -m 'Add 5-seed extension plumbing: s34 runner, out-path args, micro-study scripts *)",
       "Bash(git commit -q -m '5-seed extension: first FD004-unit s34 results \\(proposed, fedavg, fedprox\\) *)",
-      "Bash(git commit -q -m '5-seed extension: all Tier-1 s34 results \\(items 1-6 complete\\) *)"
+      "Bash(git commit -q -m '5-seed extension: all Tier-1 s34 results \\(items 1-6 complete\\) *)",
+      "Bash(.venv/bin/python merge_5seed.py)",
+      "Bash(git commit -q -m '5-seed merge: merged5 tree, figs 2-3 regenerated, manifest v2 \\(100 files\\) *)"
     ]
   }
 }

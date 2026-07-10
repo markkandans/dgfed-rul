@@ -132,6 +132,22 @@ TABLES = {
 }
 
 
+
+def _expand_dynamic(manifest):
+    """v2: auto-pin the s34 extension and merged 5-seed trees."""
+    import glob as _g
+    for name, pattern, desc in [
+        ("extension_s34", "results/s34/**/*.json",
+         "Seed 3-4 extension runs (+local 1-4, divergence 5-7, tier-3 micro-studies)."),
+        ("merged_5seed", "results/merged5/**/*.json",
+         "Merged 5-seed summaries behind the revised tables (pinned 0-2 + s34)."),
+    ]:
+        entry = {"description": desc, "sources": {}}
+        for path in sorted(_g.glob(os.path.join(ROOT, pattern), recursive=True)):
+            rel = os.path.relpath(path, ROOT)
+            entry["sources"][rel] = blob_hash(path)
+        manifest["tables"][name] = entry
+
 def main():
     manifest = {"tables": {}}
     missing = []
@@ -146,6 +162,7 @@ def main():
         manifest["tables"][name] = entry
     if missing:
         raise SystemExit(f"missing source files, manifest NOT written: {missing}")
+    _expand_dynamic(manifest)
     out = os.path.join(ROOT, "results_manifest.json")
     with open(out, "w") as f:
         json.dump(manifest, f, indent=2)

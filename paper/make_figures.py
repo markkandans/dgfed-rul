@@ -102,8 +102,8 @@ def fig1():
 def fig2():
     fig, axes = plt.subplots(2, 1, figsize=(3.5, 4.15), sharex=True)
     for ax, part in zip(axes, ["unit", "regime"]):
-        cal = J(f"results/FD004_calibrated/ablation_{part}.json")
-        reb = J(f"results/FD004_rebased/ablation_{part}.json")
+        cal = J(f"results/merged5/FD004_calibrated/ablation_{part}.json")
+        reb = J(f"results/merged5/FD004_rebased/ablation_{part}.json")
         pts = []
         for label, src, marker, gray in [
             ("Proposed", cal["no_personal_head"], "o", "0.0"),
@@ -114,16 +114,16 @@ def fig2():
                         src["rmse_mean"], src["rmse_std"], marker, gray))
         for label, m, marker, gray in [("FedAvg", "fedavg", "^", "0.0"),
                                        ("FedProx", "fedprox", "v", "0.45")]:
-            runs = J(f"results/FD004_{part}/{m}_FD004.json")["runs"]
+            runs = J(f"results/merged5/FD004_{part}/{m}_FD004.json")["runs"]
             r = [x["rmse"] for x in runs]
             pts.append((label, np.mean([x["total_MB_uploaded"] for x in runs]),
                         np.mean(r), np.std(r), marker, gray))
         for label, mb, rm, sd, marker, gray in pts:
             ax.errorbar(mb, rm, yerr=sd, marker=marker, ms=5, color=gray,
                         capsize=2, lw=0.8, ls="none", label=label)
-        cen = [x["rmse"] for x in J(f"results/FD004_{part}/central_FD004.json")["runs"]]
+        cen = [x["rmse"] for x in J(f"results/merged5/FD004_{part}/central_FD004.json")["runs"]]
         ax.axhline(np.mean(cen), color="0.0", lw=0.8, ls=":")
-        loc = J(f"results/FD004_{part}/local_FD004.json")["runs"][0]["rmse"]
+        loc = np.mean([x["rmse"] for x in J(f"results/merged5/FD004_{part}/local_FD004.json")["runs"]])
         ax.axhline(loc, color="0.6", lw=0.8, ls="--")
         tx = 0.03 if part == "unit" else 0.45
         ax.text(tx, np.mean(cen), "centralized", fontsize=6, va="bottom",
@@ -143,7 +143,7 @@ def fig2():
 
 # ------------------------------------------------- fig 3: paired seed deltas
 def fig3():
-    an = J("results/analysis_paired_seed_FD004.json")["partitions"]
+    an = J("results/merged5/analysis_paired_seed_FD004.json")["partitions"]
     arms = ["+personal_head", "proposed_no_drift_signal", "proposed_no_event_trigger",
             "proposed_plain_aggregation", "proposed_no_compression"]
     labels = ["+ personal head", "– drift signal", "– event trigger",
