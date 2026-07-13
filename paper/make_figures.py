@@ -100,7 +100,7 @@ def fig1():
 
 # --------------------------------------------- fig 2: communication–accuracy
 def fig2():
-    fig, axes = plt.subplots(2, 1, figsize=(3.5, 4.15), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(3.5, 4.0), sharex=True)
     for ax, part in zip(axes, ["unit", "regime"]):
         cal = J(f"results/merged5/FD004_calibrated/ablation_{part}.json")
         reb = J(f"results/merged5/FD004_rebased/ablation_{part}.json")
