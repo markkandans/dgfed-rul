@@ -89,7 +89,11 @@
       "Bash(git commit -q -m '5-seed extension: all Tier-1 s34 results \\(items 1-6 complete\\) *)",
       "Bash(.venv/bin/python merge_5seed.py)",
       "Bash(git commit -q -m '5-seed merge: merged5 tree, figs 2-3 regenerated, manifest v2 \\(100 files\\) *)",
-      "Bash(git commit -q -m '5-seed rewrite: abstract/intro/results/discussion/conclusion + all tables *)"
+      "Bash(git commit -q -m '5-seed rewrite: abstract/intro/results/discussion/conclusion + all tables *)",
+      "Bash(git commit -q --amend -m 'Page recovery: shrink fig1 to 2.5in and fig3 to 2.45in, regenerate figures *)",
+      "Bash(grep -oE \"zero divergent.{0,80}\")",
+      "Bash(grep -oE \".{80}leq 0.45.{0,40}\")",
+      "Bash(git commit -q -m 'Quantifier sweep fix: 16-run stability wording -> 32 stability runs \\(Sec IV\\) *)"
     ]
   }
 }
