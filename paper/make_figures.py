@@ -46,7 +46,7 @@ def save(fig, name):
 
 # ---------------------------------------------------------------- fig 1: loop
 def fig1():
-    fig, ax = plt.subplots(figsize=(7.16, 2.7))
+    fig, ax = plt.subplots(figsize=(7.16, 2.5))
     ax.set_xlim(0, 100); ax.set_ylim(0, 40); ax.axis("off")
 
     def box(x, y, w, h, text, fc="1.0", lw=0.8, fs=7, style="round,pad=0.35"):
@@ -148,7 +148,7 @@ def fig3():
             "proposed_plain_aggregation", "proposed_no_compression"]
     labels = ["+ personal head", "– drift signal", "– event trigger",
               "– drift/stale agg.", "– compression"]
-    fig, axes = plt.subplots(1, 2, figsize=(3.5, 2.6), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(3.5, 2.45), sharey=True)
     for ax, part in zip(axes, ["unit", "regime"]):
         for i, arm in enumerate(arms):
             d = an[part][arm]["per_seed_delta"]

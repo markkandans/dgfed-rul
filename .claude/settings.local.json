@@ -88,7 +88,8 @@
       "Bash(git commit -q -m '5-seed extension: first FD004-unit s34 results \\(proposed, fedavg, fedprox\\) *)",
       "Bash(git commit -q -m '5-seed extension: all Tier-1 s34 results \\(items 1-6 complete\\) *)",
       "Bash(.venv/bin/python merge_5seed.py)",
-      "Bash(git commit -q -m '5-seed merge: merged5 tree, figs 2-3 regenerated, manifest v2 \\(100 files\\) *)"
+      "Bash(git commit -q -m '5-seed merge: merged5 tree, figs 2-3 regenerated, manifest v2 \\(100 files\\) *)",
+      "Bash(git commit -q -m '5-seed rewrite: abstract/intro/results/discussion/conclusion + all tables *)"
     ]
   }
 }
