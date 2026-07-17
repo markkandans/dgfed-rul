@@ -46,7 +46,7 @@ def save(fig, name):
 
 # ---------------------------------------------------------------- fig 1: loop
 def fig1():
-    fig, ax = plt.subplots(figsize=(7.16, 2.5))
+    fig, ax = plt.subplots(figsize=(7.16, 2.4))
     ax.set_xlim(0, 100); ax.set_ylim(0, 40); ax.axis("off")
 
     def box(x, y, w, h, text, fc="1.0", lw=0.8, fs=7, style="round,pad=0.35"):
@@ -167,7 +167,7 @@ def fig3():
 
 # ---------------------------------------------------------- fig 4: retention
 def fig4():
-    fig, axes = plt.subplots(1, 2, figsize=(3.5, 1.9), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(3.5, 1.75), sharey=True)
     for ax, part in zip(axes, ["unit", "regime"]):
         cal = J(f"results/FD004_calibrated/ablation_{part}.json")
         for src, label, ls, marker, gray in [

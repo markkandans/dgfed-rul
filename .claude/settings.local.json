@@ -93,7 +93,9 @@
       "Bash(git commit -q --amend -m 'Page recovery: shrink fig1 to 2.5in and fig3 to 2.45in, regenerate figures *)",
       "Bash(grep -oE \"zero divergent.{0,80}\")",
       "Bash(grep -oE \".{80}leq 0.45.{0,40}\")",
-      "Bash(git commit -q -m 'Quantifier sweep fix: 16-run stability wording -> 32 stability runs \\(Sec IV\\) *)"
+      "Bash(git commit -q -m 'Quantifier sweep fix: 16-run stability wording -> 32 stability runs \\(Sec IV\\) *)",
+      "Bash(grep -o \"gamma = 0.5[^.]*harmful\\\\|gamma = 0.5} gates[^.]*cost\\\\|0.5\\\\$ gates 5.5[^.]*\" main.tex)",
+      "Bash(grep -oE \"trigger factor .\\\\\\\\\\\\\\\\gamma. has a narrow window.{0,180}\" main.tex)"
     ]
   }
 }
