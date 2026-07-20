@@ -119,7 +119,7 @@ def fig3():
 def fig4():
     fig, axes = plt.subplots(1, 2, figsize=(3.5, 1.75), sharey=True)
     for ax, part in zip(axes, ["unit", "regime"]):
-        cal = J(f"results/FD004_calibrated/ablation_{part}.json")
+        cal = J(f"results/merged5/FD004_calibrated/ablation_{part}.json")
         for src, label, ls, marker, gray in [
             (cal["no_personal_head"], "Proposed", "-", "o", "0.0"),
             (cal["full"], "DGFed-P", "--", "s", "0.5"),
