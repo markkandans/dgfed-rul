@@ -95,7 +95,11 @@
       "Bash(grep -oE \".{80}leq 0.45.{0,40}\")",
       "Bash(git commit -q -m 'Quantifier sweep fix: 16-run stability wording -> 32 stability runs \\(Sec IV\\) *)",
       "Bash(grep -o \"gamma = 0.5[^.]*harmful\\\\|gamma = 0.5} gates[^.]*cost\\\\|0.5\\\\$ gates 5.5[^.]*\" main.tex)",
-      "Bash(grep -oE \"trigger factor .\\\\\\\\\\\\\\\\gamma. has a narrow window.{0,180}\" main.tex)"
+      "Bash(grep -oE \"trigger factor .\\\\\\\\\\\\\\\\gamma. has a narrow window.{0,180}\" main.tex)",
+      "Bash(ls -la /Users/markkandan/Downloads/fig1_loop.pdf /Users/markkandan/Downloads/fig1_loop.png /Users/markkandan/Downloads/fig1_redraw.py 2>&1)",
+      "Bash(cp /Users/markkandan/Downloads/fig1_loop.pdf /Users/markkandan/Downloads/fig1_loop.png /Users/markkandan/VIT/Research/Paper/Localization/6G/fed_rul/paper/latex/figures/)",
+      "Bash(cp /Users/markkandan/Downloads/fig1_redraw.py /Users/markkandan/VIT/Research/Paper/Localization/6G/fed_rul/paper/fig1_redraw.py)",
+      "Bash(.venv/bin/python -c \"import ast; ast.parse\\(open\\('paper/make_figures.py'\\).read\\(\\)\\); ast.parse\\(open\\('paper/fig1_redraw.py'\\).read\\(\\)\\); print\\('both scripts parse'\\)\")"
     ]
   }
 }
