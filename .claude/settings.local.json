@@ -100,7 +100,9 @@
       "Bash(cp /Users/markkandan/Downloads/fig1_loop.pdf /Users/markkandan/Downloads/fig1_loop.png /Users/markkandan/VIT/Research/Paper/Localization/6G/fed_rul/paper/latex/figures/)",
       "Bash(cp /Users/markkandan/Downloads/fig1_redraw.py /Users/markkandan/VIT/Research/Paper/Localization/6G/fed_rul/paper/fig1_redraw.py)",
       "Bash(.venv/bin/python -c \"import ast; ast.parse\\(open\\('paper/make_figures.py'\\).read\\(\\)\\); ast.parse\\(open\\('paper/fig1_redraw.py'\\).read\\(\\)\\); print\\('both scripts parse'\\)\")",
-      "Bash(pdftoppm -png -r 80 -f 8 -l 8 main.pdf /private/tmp/claude-501/-Users-markkandan-VIT-Research-Paper-Localization-6G-fed-rul/487691e5-5a3e-4d7e-8b5e-25919650d5d9/scratchpad/p8)"
+      "Bash(pdftoppm -png -r 80 -f 8 -l 8 main.pdf /private/tmp/claude-501/-Users-markkandan-VIT-Research-Paper-Localization-6G-fed-rul/487691e5-5a3e-4d7e-8b5e-25919650d5d9/scratchpad/p8)",
+      "Bash(git commit -q -m 'Add TII cover letter draft \\(author-supplied\\) *)",
+      "Bash(git commit -q -m 'Update local Claude settings \\(permission allowlist churn\\) *)"
     ]
   }
 }
