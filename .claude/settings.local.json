@@ -102,7 +102,32 @@
       "Bash(.venv/bin/python -c \"import ast; ast.parse\\(open\\('paper/make_figures.py'\\).read\\(\\)\\); ast.parse\\(open\\('paper/fig1_redraw.py'\\).read\\(\\)\\); print\\('both scripts parse'\\)\")",
       "Bash(pdftoppm -png -r 80 -f 8 -l 8 main.pdf /private/tmp/claude-501/-Users-markkandan-VIT-Research-Paper-Localization-6G-fed-rul/487691e5-5a3e-4d7e-8b5e-25919650d5d9/scratchpad/p8)",
       "Bash(git commit -q -m 'Add TII cover letter draft \\(author-supplied\\) *)",
-      "Bash(git commit -q -m 'Update local Claude settings \\(permission allowlist churn\\) *)"
+      "Bash(git commit -q -m 'Update local Claude settings \\(permission allowlist churn\\) *)",
+      "Bash(python3 -c \"import numpy, matplotlib; print\\('numpy', numpy.__version__, '| matplotlib', matplotlib.__version__\\)\")",
+      "Bash(python3 -c \"import pptx; print\\('python-pptx', pptx.__version__\\)\")",
+      "Bash(kpsewhich beamerthememetropolis.sty)",
+      "Bash(kpsewhich beamerfontthememetropolis.sty)",
+      "Bash(python3 -m venv 6g-talk/.venv)",
+      "Bash(6g-talk/.venv/bin/pip install *)",
+      "Bash(6g-talk/.venv/bin/python -c \"import numpy, matplotlib, pptx, scipy; print\\('venv OK:', numpy.__version__, matplotlib.__version__, pptx.__version__, scipy.__version__\\)\")",
+      "Skill(dataviz)",
+      "Skill(dataviz:*)",
+      "Bash(node scripts/validate_palette.js \"#0E7C7B,#D55E00,#456990,#F2A104,#6B4E71\" --mode light)",
+      "Bash(node scripts/validate_palette.js \"#2a78d6,#eb6834,#1baf7a,#eda100,#e87ba4\" --mode light)",
+      "Bash(../.venv/bin/python make_figures.py)",
+      "Bash(../.venv/bin/python -c ' *)",
+      "Bash(../../.venv/bin/python verify_demo1_otfs.py)",
+      "Bash(../../.venv/bin/python verify_demo3_ris.py)",
+      "Bash(../../.venv/bin/python verify_demo4_isac.py)",
+      "Bash(../../.venv/bin/python gen_demo2_backup.py)",
+      "Bash(../../.venv/bin/python gen_demo5_backup.py)",
+      "Bash(pdflatex -interaction=nonstopmode -halt-on-error main.tex)",
+      "Bash(awk '/\\\\\\(\\\\.\\\\/sections|\\\\\\(\\\\.\\\\/tikz/{file=$0} /Overfull .\\(v|h\\)box \\\\\\([0-9]{2}/{print file \" ==> \" $0}' main.log)",
+      "Bash(sort -t'\\(' -k2 -rn)",
+      "Bash(sips -s format png --resampleWidth 1600 main.pdf --out /private/tmp/claude-501/-Users-markkandan-VIT-Research-Paper-Localization-6G-fed-rul/94e48115-8f85-40a6-9e01-90d40816ce03/scratchpad/beamer_p1.png)",
+      "Bash(grep -E '\\\\.venv/|\\\\.aux$|\\\\.log$|__pycache__')",
+      "Bash(git commit *)",
+      "Bash(git commit -q .claude/settings.local.json -m 'Update local Claude settings \\(permission allowlist churn\\) *)"
     ]
   }
 }
