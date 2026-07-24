@@ -17,3 +17,6 @@ logs/
 *.blg
 *.bbl
 *.synctex.gz
+
+# macOS Finder metadata
+.DS_Store
