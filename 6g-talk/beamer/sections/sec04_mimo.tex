@@ -1,0 +1,232 @@
+% ============== Section 4: Ultra-massive MIMO & beamforming (S21-S29) =====
+\section{Ultra-Massive MIMO \& Beamforming}
+
+% --- S21 -----------------------------------------------------------------
+\begin{frame}{From massive to ultra-massive}
+  \begin{itemize}\itemsep2pt
+    \item 5G today: 64\,TRX at 3.5\,GHz \;$\to$\; 6G: \alert{512--4096
+          elements} at FR3 / mmWave / sub-THz
+    \item Same rooftop aperture at higher $f$ $\Rightarrow$ more elements,
+          narrower beams, more EIRP
+    \item New physics enters: \alert{near-field propagation}, spatial
+          non-stationarity across large arrays
+    \item The bill: RF chains, ADCs, calibration, fronthaul --- DSP must
+          economize
+  \end{itemize}
+  \note{[S21, 1 min | clock 0:26:30, after Demo 1] Re-entry after the demo:
+  ``From time-frequency games to space.'' The scaling is driven by aperture
+  reuse: same panel, quadratically more elements as wavelength shrinks. The
+  section's plot: every gain has a hardware price, and the DSP's job is to
+  refuse to pay full retail.}
+\end{frame}
+
+% --- S22 -----------------------------------------------------------------
+\begin{frame}{Near-field vs far-field}
+  \begin{columns}[T]
+    \column{0.52\textwidth}
+    \begin{equation*}
+      d_R=\frac{2D^{2}}{\lambda}
+      \qquad
+      \begin{cases}
+        d>d_R: & \text{planar, }\mathbf a(\theta)\\[2pt]
+        d<d_R: & \text{spherical, }\mathbf a(\theta,r)
+      \end{cases}
+    \end{equation*}
+    \begin{itemize}\itemsep1pt
+      \item $D=0.5$\,m at 30\,GHz: $d_R=50$\,m --- users are
+            \emph{inside} the near field
+      \item Near field $\Rightarrow$ \alert{beam focusing} (range-selective!),
+            not just steering
+      \item Wavefront curvature carries range information --- gift for
+            localization
+    \end{itemize}
+    \column{0.46\textwidth}
+    \centering
+    \begin{tikzpicture}[scale=0.75]
+      \draw[very thick, accent] (0,0) -- (0,2.4);
+      \foreach \y in {0.2,0.6,...,2.3} \fill[accent] (0,\y) circle (1.1pt);
+      \node[lab, below] at (0,-0.1) {array, aperture $D$};
+      \foreach \r in {1.0,1.6,2.2}
+        \draw[cblue, thick] (0,1.2) ++(-62:\r) arc (-62:62:\r);
+      \node[lab, cblue] at (1.5,2.6) {spherical};
+      \foreach \x in {3.6,4.1,4.6}
+        \draw[corange, thick] (\x,0.1) -- (\x,2.3);
+      \node[lab, corange] at (4.1,2.6) {planar};
+      \draw[arr, gray] (0.1,0.05) -- node[lab, below]{$d_R=2D^2/\lambda$} (3.5,0.05);
+    \end{tikzpicture}
+  \end{columns}
+  \note{[S22, 1.5 min | clock 0:27:30] Everyone learned $d_R$ once and forgot
+  it because it used to be centimeters. Recompute it live: half-meter array,
+   30 GHz, 50 meters --- the cell IS the near field. Beam focusing means two
+  users on the same bearing at different ranges can be separated. That is a
+  genuinely new spatial degree of freedom.}
+\end{frame}
+
+% --- S23 -----------------------------------------------------------------
+\begin{frame}{Hybrid analog--digital architectures}
+  \centering
+  \resizebox{0.9\textwidth}{!}{\input{tikz/hybrid_bf}}
+  \begin{itemize}\itemsep1pt
+    \item $F_{\mathrm{RF}}$: phase-only, $|[F_{\mathrm{RF}}]_{ij}|=1/\sqrt{N_t}$;
+          wideband arrays add \alert{true-time-delay} units against beam squint
+  \end{itemize}
+  \note{[S23, 1.5 min | clock 0:29] Left: the fully digital ideal --- an
+  ADC/DAC pair per element, unaffordable at 1024 elements. Right: the hybrid
+  compromise --- a thin digital layer, a cheap analog phase network. The
+  constraint that makes the math interesting: RF entries are unit-modulus.
+  Mention subarray (partially connected) variant trades gain for phase-shifter
+  count.}
+\end{frame}
+
+% --- S24 -----------------------------------------------------------------
+\begin{frame}{Designing the hybrid precoder: sparsity to the rescue}
+  \begin{equation*}
+    \min_{F_{\mathrm{RF}},F_{\mathrm{BB}}}
+    \left\|F_{\mathrm{opt}}-F_{\mathrm{RF}}F_{\mathrm{BB}}\right\|_F
+    \quad\text{s.t.}\quad
+    F_{\mathrm{RF}}\in\{\text{array response vectors}\}
+  \end{equation*}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{itemize}\itemsep1pt
+      \item mmWave channels are sparse in angle $\Rightarrow$ precoding
+            $\approx$ \alert{sparse reconstruction} $\Rightarrow$ OMP
+            (El Ayach et al.\ 2014)
+      \item $N_{\mathrm{RF}}\approx N_s$ chains already $\approx$
+            near-digital performance
+    \end{itemize}
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig_hybrid_se.png}
+  \end{columns}
+  \note{[S24, 1 min | clock 0:30:30] The curves are our own simulation (same
+  code as Demo 2): 64x16, 6 paths, 4 streams --- the 4-RF-chain OMP hybrid
+  sits within a fraction of a bit of fully digital. The deep reason: the
+  channel only has ~6 directions worth talking to; 4 well-chosen beams capture
+  almost everything.}
+\end{frame}
+
+% --- S25 -----------------------------------------------------------------
+\begin{frame}{Beam management: finding the needle}
+  \begin{itemize}\itemsep2pt
+    \item 5G NR baseline: SSB sweep $\to$ CSI-RS refinement $\to$ tracking
+          and failure recovery
+    \item Overhead grows with codebook size $\Rightarrow$ hierarchical search,
+          ML-assisted prediction for 6G
+    \item Sub-THz pencil beams: mobility and micro-blockage stress the loop
+          hard
+    \item Research directions: side-information beams (position, vision,
+          radar), \alert{near-field codebooks} (angle $\times$ range)
+  \end{itemize}
+  \note{[S25, 1 min | clock 0:31:30] Beam management is where beautiful array
+  theory meets protocol reality: every training symbol is a symbol not
+  carrying data --- recall mmWave Lesson 2. The 6G twist: near-field codebooks
+  must sample angle AND range, squaring the codebook unless structure is
+  exploited. Natural hook for the AI section later.}
+\end{frame}
+
+% --- S26 -----------------------------------------------------------------
+\begin{frame}{Cell-free massive MIMO}
+  \begin{columns}[T]
+    \column{0.55\textwidth}
+    \begin{itemize}\itemsep2pt
+      \item Many distributed low-cost APs, coherent joint processing, no cell
+            boundaries
+      \item Uniform SNR replaces cell-edge misery; macro-diversity beats
+            blockage
+      \item The catches: fronthaul, synchronization, scalable processing
+            (dynamic cooperation clusters)
+      \item 6G angle: natural platform for \alert{distributed sensing} and RIS
+            integration
+    \end{itemize}
+    \column{0.42\textwidth}
+    \centering
+    \begin{tikzpicture}[scale=0.72]
+      % cellular
+      \foreach \x/\y in {0/0, 1.6/0, 0.8/1.35}
+        \node[regular polygon, regular polygon sides=6, draw=gray,
+              minimum size=15mm, inner sep=0] at (\x,\y) {};
+      \node[lab] at (0.8,-0.85) {cells + towers};
+      % cell-free
+      \begin{scope}[xshift=38mm]
+        \node[blkb, minimum width=9mm] (cpu) at (0.8,-0.1) {CPU};
+        \foreach \x/\y in {0/0.5, 0.5/1.5, 1.3/0.9, 1.9/1.6, 2.1/0.3, 1.1/2.0}{
+          \fill[accent] (\x,\y) circle (2.2pt);
+          \draw[gray!60, thin] (cpu) -- (\x,\y);}
+        \node[lab] at (1.1,-0.85) {APs + fronthaul};
+      \end{scope}
+    \end{tikzpicture}
+  \end{columns}
+  \note{[S26, 1 min | clock 0:32:30] One-line pitch: instead of a few big
+  towers each owning users, many small APs all serve everyone. The
+  90-percentile user is the winner. Physical-layer research lives in the
+  ``catches'' bullet --- especially scalable combining and phase sync over
+  fronthaul.}
+\end{frame}
+
+% --- S27 -----------------------------------------------------------------
+\begin{frame}{Channel estimation by compressed sensing}
+  \begin{equation*}
+    \mathbf y=\Phi\,\mathbf h+\mathbf n,\qquad
+    \|\mathbf h\|_0=L\ll\dim(\mathbf h),\qquad
+    H\approx A_R\,\mathrm{diag}(\mathbf g)\,A_T^{H}
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item Angular-domain sparsity ($L$ paths) $\Rightarrow$ recovery from
+          $\mathcal O(L\log N)$ pilots via OMP / AMP
+    \item Pilot savings are what make 1024-element arrays \emph{trainable at
+          all}
+    \item Caveats: grid mismatch (off-grid/atomic-norm methods), near-field
+          dictionaries grow with angle$\times$range
+    \item Same math returns in Section 8 for activity detection --- learn once,
+          bill twice
+  \end{itemize}
+  \note{[S27, 1 min | clock 0:33:30] Connect to S9: the physics gave us
+  sparsity, CS cashes it in. Order-of-magnitude example: 64 paths worth of
+  unknowns in a 1024x1 vector needs a few hundred, not a few thousand,
+  measurements. Flag the two honest caveats; off-grid is a good student
+  project generator.}
+\end{frame}
+
+% --- S28 -----------------------------------------------------------------
+\begin{frame}{Pilot contamination}
+  \begin{equation*}
+    \mathrm{SINR}_j\;\xrightarrow{\;M\to\infty\;}\;
+    \frac{\beta_{jj}^{2}}{\sum_{l\neq j}\beta_{jl}^{2}}
+    \qquad\text{(same-pilot cells }l\text{)}
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item Finite coherence block $\Rightarrow$ pilot reuse $\Rightarrow$
+          correlated estimates $\Rightarrow$ coherent interference that does
+          \alert{not} average out with more antennas
+    \item Modern view (Bj\"ornson et al.): with multi-cell MMSE processing and
+          spatial correlation, capacity grows without bound ---
+          contamination is a \emph{processing artifact}, not a law of nature
+    \item Practical mitigations: smart pilot assignment, correlation-aware
+          estimation, cell-free operation
+  \end{itemize}
+  \note{[S28, 1 min | clock 0:34:30] Tell it as a two-act story: 2010 --- the
+  asymptotic ceiling, most-cited limit in massive MIMO; 2018 --- the ceiling
+  dissolves under MMSE processing with unequal spatial correlations. Great
+  case study in how ``fundamental limits'' sometimes encode assumptions, and
+  how better DSP quietly removes them.}
+\end{frame}
+
+% --- S29 -----------------------------------------------------------------
+\begin{frame}{Array frontier: open challenges}
+  \begin{itemize}\itemsep2pt
+    \item Wideband beam \alert{squint} at $10\%+$ fractional bandwidth:
+          TTD-augmented hybrids
+    \item Near-field CSI: dimensionality, codebooks, tracking
+    \item Spatial non-stationarity: different subarrays see different channels
+    \item The honest metric: \alert{energy per beamformed bit}, not array gain
+  \end{itemize}
+  \demoslot{2 (3.5 min)}{\textbf{64-element array, live}: steer the beam with a
+    slider; digital vs OMP-hybrid spectral efficiency.
+    \hfill\src{matlab/demo2\_hybrid\_beamforming}}
+  \note{[S29 + DEMO 2, 1+3.5 min | clock 0:35:30] Quick pass over the open
+  list, then SWITCH TO MATLAB. Demo 2 script: move the slider, the beam
+  follows; grating-lobe moment when steering beyond 60 degrees is a nice
+  ``physics is watching'' beat. Then the SE bars: 4 chains vs 64. If MATLAB
+  fails: appendix A2. Demo done by 0:40.}
+\end{frame}

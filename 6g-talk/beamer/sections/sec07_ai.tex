@@ -1,0 +1,174 @@
+% ============== Section 7: AI-native physical layer (S43-S50) =============
+\section{AI-Native Physical Layer}
+
+% --- S43 -----------------------------------------------------------------
+\begin{frame}{What ``AI-native'' actually means}
+  \begin{itemize}\itemsep2pt
+    \item 5G: AI bolted on (SON, scheduling). 6G ambition: AI as a
+          \alert{design principle} inside the air interface
+    \item \textbf{Model deficit}: no faithful math model (hardware
+          nonlinearities, mmWave clutter) $\Rightarrow$ learn the model
+    \item \textbf{Algorithm deficit}: model known, optimal algorithm
+          intractable $\Rightarrow$ learn the algorithm
+    \item Integration spectrum: replace a block $\to$ co-design blocks $\to$
+          end-to-end learned PHY
+  \end{itemize}
+  \note{[S43, 1 min | clock 0:59:30, after Demo 4] The deficit taxonomy
+  (Shlezinger/Eldar) is the most useful sorting hat: it predicts where
+  learning helps and where classic DSP stays. Channel coding: no deficit,
+  learning adds little. PA distortion compensation: model deficit, learning
+  shines. Keep this frame for every AI-PHY paper you referee.}
+\end{frame}
+
+% --- S44 -----------------------------------------------------------------
+\begin{frame}{Deep learning for channel estimation}
+  \begin{itemize}\itemsep2pt
+    \item Treat the pilot-grid estimate as a \alert{noisy image} $\Rightarrow$
+          CNN denoising / super-resolution across time--frequency
+    \item Learned estimators approach MMSE \emph{without} knowing channel
+          statistics --- they absorb them from data
+    \item Gains largest at low SNR and under model mismatch
+    \item Costs: training data, generalization across cells/hardware,
+          µs-latency inference budgets
+  \end{itemize}
+  \note{[S44, 1 min | clock 1:00:30] This is exactly Demo 5's setting ---
+  hold the thought for ten minutes. The image analogy is not decoration: the
+  TF channel grid has local correlation structure like natural images, which
+  is why vision architectures transfer. The honest caveat list (data,
+  generalization) returns on S49.}
+\end{frame}
+
+% --- S45 -----------------------------------------------------------------
+\begin{frame}{Autoencoder end-to-end PHY}
+  \begin{columns}[T]
+    \column{0.55\textwidth}
+    \begin{itemize}\itemsep2pt
+      \item O'Shea \& Hoydis 2017: TX--channel--RX as one autoencoder; learn
+            constellation and demapper \alert{jointly}
+      \item Learned constellations rediscover --- and under impairments beat ---
+            hand-designed ones
+      \item Needs a differentiable channel $\Rightarrow$ surrogate models or RL
+            for the real world
+    \end{itemize}
+    \column{0.43\textwidth}
+    \centering
+    \begin{tikzpicture}[node distance=2.5mm and 4mm]
+      \node[blkb] (enc) {encoder\\NN};
+      \node[blk, right=of enc, fill=cblue!15, draw=cblue] (ch) {channel};
+      \node[blkb, right=of ch] (dec) {decoder\\NN};
+      \draw[arr] (enc) -- (ch); \draw[arr] (ch) -- (dec);
+      \node[lab, left=2mm of enc] (s) {$s$};
+      \node[lab, right=2mm of dec] (sh) {$\hat s$};
+      \draw[arr] (s) -- (enc); \draw[arr] (dec) -- (sh);
+      \draw[arr, dashed, gray] (sh.south) to[bend left=25]
+        node[lab, below]{end-to-end loss} (enc.south);
+    \end{tikzpicture}
+  \end{columns}
+  \note{[S45, 1 min | clock 1:01:30] Historically the paper that launched the
+  field: treat the whole link as one differentiable function and descend the
+  gradient. Realism check for the audience: block-based systems will not
+  vanish --- certification, interoperability and debugging all favor structure.
+  Hybrids win in practice.}
+\end{frame}
+
+% --- S46 -----------------------------------------------------------------
+\begin{frame}{Neural receivers}
+  \begin{itemize}\itemsep2pt
+    \item Replace equalization + demapping with one trained network over the
+          received grid (channel estimate optional!)
+    \item Demonstrated at 3GPP-compatible scale (multi-user MIMO neural
+          receivers, Sionna-class toolchains)
+    \item Robustness from training over channel \emph{distributions};
+          complexity tamed by pruning/quantization
+    \item Open operational question: retraining cadence vs channel drift
+  \end{itemize}
+  \note{[S46, 1 min | clock 1:02:30] The pragmatic middle ground that vendors
+  actually prototype: keep the OFDM frame, swap the inner receiver. Notable
+  detail: good neural receivers can skip explicit channel estimation ---
+  pilots become just more input features. That should provoke the estimation
+  theorists in the room --- in a good way.}
+\end{frame}
+
+% --- S47 -----------------------------------------------------------------
+\begin{frame}{Model-based deep learning: deep unfolding}
+  \begin{equation*}
+    \text{ISTA: } \mathbf x^{(k+1)}=\eta_{\lambda}\!\left(\mathbf x^{(k)}
+      +A^{H}(\mathbf y-A\mathbf x^{(k)})\right)
+    \;\;\Rightarrow\;\;
+    \text{LISTA: } \mathbf x^{(k+1)}=\eta_{\lambda_k}\!\left(W_1^{(k)}\mathbf y
+      +W_2^{(k)}\mathbf x^{(k)}\right)
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item Unroll $K$ iterations of a classical algorithm into a $K$-layer
+          network; \alert{learn the knobs} (steps, thresholds, matrices)
+    \item Order-of-magnitude fewer iterations at equal accuracy; retains
+          interpretability and per-layer guarantees flavor
+    \item PHY wins: unfolded detection, beamforming, sparse channel estimation
+  \end{itemize}
+  \note{[S47, 1.5 min | clock 1:03:30] The best of both worlds slide. Sell it
+  as ``your favorite iterative algorithm, after weight training'': same
+  skeleton, data-tuned parameters, so priors and structure survive. For the
+  faculty: unfolding is a paper machine --- take any classic iteration in your
+  drawer and unfold it. This equation is the cheat-sheet's centerfold.}
+\end{frame}
+
+% --- S48 -----------------------------------------------------------------
+\begin{frame}{Semantic communications}
+  \begin{itemize}\itemsep2pt
+    \item Shift the target from \alert{bit fidelity} to \alert{task fidelity}:
+          transmit what the receiver needs to act, not every bit
+    \item Neural joint source--channel coding: graceful degradation, no cliff
+          effect --- compelling image/speech demos
+    \item Open theory: a working semantic information measure; where the
+          separation theorem stands; standardizable interfaces
+    \item Fair positioning: promising for constrained links (XR, satellite
+          IoT); not a 6G day-one feature
+  \end{itemize}
+  \note{[S48, 1 min | clock 1:05] Flex slide --- can merge into S49 if behind
+  schedule. One vivid example: transmitting a face for a video call needs the
+  expression, not the pixels. The cliff-effect contrast: digital codecs die
+  abruptly at threshold SNR; learned JSCC degrades like analog TV --- soft.}
+\end{frame}
+
+% --- S49 -----------------------------------------------------------------
+\begin{frame}{The hard problems: data, generalization, trust}
+  \begin{itemize}\itemsep2pt
+    \item \textbf{Data}: channel measurements are vendor-siloed; sim-to-real
+          transfer is the quiet blocker
+    \item \textbf{Generalization}: across cells, hardware, mobility;
+          distribution-shift monitoring in a live network
+    \item \textbf{Budget}: µs-scale inference, joules per inference, PHY
+          real-time constraints
+    \item \textbf{Trust}: testability, certification, explainability ---
+          telecom-grade requirements
+    \item Community opening: standardized channel datasets \& benchmarks would
+          be a genuine service to the field
+  \end{itemize}
+  \note{[S49, 1 min | clock 1:06] The referee-hat slide. Encourage the room:
+  a well-curated public dataset + benchmark for one PHY task can out-impact
+  another architecture paper. If S48 was skipped, borrow its minute here for
+  discussion of sim-to-real.}
+\end{frame}
+
+% --- S50 -----------------------------------------------------------------
+\begin{frame}{AI/ML in 3GPP}
+  \begin{itemize}\itemsep1pt
+    \item Rel-18 study $\to$ Rel-19 normative first steps; three use cases:
+          \alert{CSI feedback compression}, \alert{beam prediction},
+          \alert{positioning}
+    \item Two-sided models (UE encoder / network decoder): the
+          interoperability puzzle of the decade
+    \item 6G study (Rel-20): AI-native candidates; the real spec work is
+          \emph{life-cycle management} --- monitoring, fallback, retraining
+  \end{itemize}
+  \demoslot{5 (2.5 min)}{\textbf{LS vs MMSE vs a small neural network} for OFDM
+    channel estimation --- NMSE curves, pre-trained net, runs in seconds.
+    \hfill\src{matlab/demo5\_dl\_channel\_estimation}}
+  \note{[S50 + DEMO 5, 1+2.5 min | clock 1:07] Standards reality in three
+  bullets, then the last MATLAB switch. Demo 5 narration: LS is the
+  statistics-free baseline; MMSE knows the true covariance (unfair advantage);
+  the small NN learns from data and lands within a fraction of a dB of MMSE.
+  That is the whole AI-PHY promise in one plot. TIMING NOTE: this demo is the
+  first to sacrifice if late --- appendix A5 shows the same curves. Done by
+  ~1:10.}
+\end{frame}

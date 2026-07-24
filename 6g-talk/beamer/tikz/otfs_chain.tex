@@ -1,0 +1,22 @@
+% OTFS transceiver chain (slide 17) -- native TikZ
+\begin{tikzpicture}[node distance=4mm and 6mm]
+  \node[lab] (x) {$x[k,l]$\\[-2pt]\scriptsize DD data};
+  \node[blk, right=of x] (isfft) {ISFFT};
+  \node[blk, right=of isfft] (heis) {Heisenberg\\transform\\ \scriptsize(OFDM mod.)};
+  \node[blkb, right=of heis, fill=cblue!15] (ch) {$h(\tau,\nu)$\\ \scriptsize doubly\\[-3pt]\scriptsize dispersive};
+  \node[blk, right=of ch] (wig) {Wigner\\transform\\ \scriptsize(OFDM demod.)};
+  \node[blk, right=of wig] (sfft) {SFFT};
+  \node[lab, right=of sfft] (y) {$y[k,l]$\\[-2pt]\scriptsize DD out};
+
+  \draw[arr] (x) -- (isfft);
+  \draw[arr] (isfft) -- node[lab, above]{$X_{\mathrm{tf}}[n,m]$} (heis);
+  \draw[arr] (heis) -- node[lab, above]{$s(t)$} (ch);
+  \draw[arr] (ch) -- node[lab, above]{$r(t)$} (wig);
+  \draw[arr] (wig) -- node[lab, above]{$Y_{\mathrm{tf}}[n,m]$} (sfft);
+  \draw[arr] (sfft) -- (y);
+
+  \node[draw=gray, dashed, rounded corners, fit=(isfft)(heis),
+        inner sep=2.5mm, label={[lab]below:2D precoding across the frame}] {};
+  \node[draw=gray, dashed, rounded corners, fit=(wig)(sfft),
+        inner sep=2.5mm, label={[lab]below:back to delay--Doppler}] {};
+\end{tikzpicture}

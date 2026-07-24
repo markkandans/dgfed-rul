@@ -1,0 +1,143 @@
+% ============== Section 11: Demo recap, takeaways & Q&A (S66-S70) =========
+\section{Takeaways \& Q\&A}
+
+% --- S66 -----------------------------------------------------------------
+\begin{frame}{Five demos, five lessons}
+  \begin{enumerate}\itemsep2pt
+    \item \textbf{D1} OFDM vs OTFS: at high Doppler, \alert{change the domain},
+          not the SNR
+    \item \textbf{D2} Hybrid beamforming: in sparse channels,
+          \alert{4 RF chains $\approx$ 64}
+    \item \textbf{D3} RIS: co-phasing turns a random walk into
+          \alert{$N^2$} combining
+    \item \textbf{D4} ISAC: a \alert{data-carrying frame} can image two moving
+          targets
+    \item \textbf{D5} Learned estimation: $\approx$\,MMSE
+          \alert{without knowing the statistics}
+  \end{enumerate}
+  \vspace{1mm}
+  \src{Pre-computed versions: appendix A1--A5 \,\textbullet\, code shipped with
+       the slides}
+  \note{[S66, 0.5 min | clock 1:23] Each demo compressed to its aphorism ---
+  read all five with rhythm; this is the recap that makes the demos stick.
+  All code goes home with the audience.}
+\end{frame}
+
+% --- S67 -----------------------------------------------------------------
+\begin{frame}{Key takeaways}
+  \begin{itemize}\itemsep4pt
+    \item 6G $=$ new spectrum + new geometry (near-field) + new functions
+          (sensing) + new tools (learning)
+    \item OFDM is not dead --- it has \alert{new roommates}; expect
+          scenario-adaptive PHY
+    \item Three formulas organize half the field:\quad
+          $P\!\propto\!N^2$ \quad\textbullet\quad $d_R=2D^2/\lambda$
+          \quad\textbullet\quad
+          $\mathrm{var}(\hat\tau)\ge\frac{1}{8\pi^2\beta^2\,\mathrm{SNR}}$
+    \item Signal processing remains the discipline that turns
+          \alert{physics into throughput}
+  \end{itemize}
+  \note{[S67, 1 min | clock 1:23:30] THE LANDING SLIDE --- if the schedule
+  collapsed, jump straight here from anywhere. Deliver the four lines slowly.
+  The three-formulas bullet usually earns the photo of the talk; pause on it.}
+\end{frame}
+
+% --- S68 -----------------------------------------------------------------
+\begin{frame}{Open problems worth a PhD}
+  \begin{itemize}\itemsep1pt
+    \item Unified DD-domain ISAC: one waveform, provably optimal for both
+          jobs \hfill\src{entry: Secs.\ 3+6}
+    \item Near-field channel estimation \& codebooks at $N>10^3$
+          \hfill\src{entry: Sec.\ 4}
+    \item EM-consistent RIS models (coupling, wideband) that stay tractable
+          \hfill\src{entry: Sec.\ 5}
+    \item Trustworthy neural PHY: certification, monitoring, graceful
+          fallback \hfill\src{entry: Sec.\ 7}
+    \item Energy-optimal waveform + PA co-design for sub-THz
+          \hfill\src{entry: Secs.\ 2+10}
+    \item Grant-free access at $10^8$ devices/km$^2$: CS at societal scale
+          \hfill\src{entry: Sec.\ 8}
+  \end{itemize}
+  \note{[S68, 0.5 min | clock 1:24:30] Aimed at the research scholars: each
+  line is a defensible thesis statement with its entry toolbox tagged. Offer
+  to discuss any of them in Q\&A or by email.}
+\end{frame}
+
+% --- S69 -----------------------------------------------------------------
+\begin{frame}{References \& resources}
+  \tiny
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{enumerate}\itemsep0pt
+      \item ITU-R Rec.\ M.2160-0, ``Framework and overall objectives of the
+            future development of IMT for 2030 and beyond,'' Nov.\ 2023.
+      \item W. Saad, M. Bennis, and M. Chen, ``A vision of 6G wireless
+            systems: Applications, trends, technologies, and open research
+            problems,'' \emph{IEEE Network}, vol.\ 34, no.\ 3, 2020.
+      \item H. Tataria \emph{et al.}, ``6G wireless systems: Vision,
+            requirements, challenges, insights, and opportunities,''
+            \emph{Proc.\ IEEE}, vol.\ 109, no.\ 7, 2021.
+      \item R. Hadani \emph{et al.}, ``Orthogonal time frequency space
+            modulation,'' in \emph{Proc.\ IEEE WCNC}, 2017.
+      \item Z. Wei \emph{et al.}, ``Orthogonal time-frequency space
+            modulation: A promising next-generation waveform,'' \emph{IEEE
+            Wireless Commun.}, vol.\ 28, no.\ 4, 2021.
+      \item A. Bemani, N. Ksairi, and M. Kountouris, ``AFDM: Affine frequency
+            division multiplexing for next generation wireless
+            communications,'' \emph{IEEE Trans.\ Wireless Commun.}, 2023.
+      \item O. El Ayach, S. Rajagopal, S. Abu-Surra, Z. Pi, and R. W. Heath,
+            ``Spatially sparse precoding in millimeter wave MIMO systems,''
+            \emph{IEEE Trans.\ Wireless Commun.}, vol.\ 13, no.\ 3, 2014.
+      \item E. Bj\"ornson, J. Hoydis, and L. Sanguinetti, ``Massive MIMO has
+            unlimited capacity,'' \emph{IEEE Trans.\ Wireless Commun.},
+            vol.\ 17, no.\ 1, 2018.
+    \end{enumerate}
+    \column{0.5\textwidth}
+    \begin{enumerate}\setcounter{enumi}{8}\itemsep0pt
+      \item Q. Wu and R. Zhang, ``Intelligent reflecting surface enhanced
+            wireless network via joint active and passive beamforming,''
+            \emph{IEEE Trans.\ Wireless Commun.}, vol.\ 18, no.\ 11, 2019.
+      \item M. Di Renzo \emph{et al.}, ``Smart radio environments empowered
+            by reconfigurable intelligent surfaces,'' \emph{IEEE J.\ Sel.\
+            Areas Commun.}, vol.\ 38, no.\ 11, 2020.
+      \item F. Liu \emph{et al.}, ``Integrated sensing and communications:
+            Toward dual-functional wireless networks for 6G and beyond,''
+            \emph{IEEE J.\ Sel.\ Areas Commun.}, vol.\ 40, no.\ 6, 2022.
+      \item C. Sturm and W. Wiesbeck, ``Waveform design and signal processing
+            aspects for fusion of wireless communications and radar
+            sensing,'' \emph{Proc.\ IEEE}, vol.\ 99, no.\ 7, 2011.
+      \item T. O'Shea and J. Hoydis, ``An introduction to deep learning for
+            the physical layer,'' \emph{IEEE Trans.\ Cogn.\ Commun.\ Netw.},
+            vol.\ 3, no.\ 4, 2017.
+      \item N. Shlezinger, J. Whang, Y. C. Eldar, and A. J. Goldsmith,
+            ``Model-based deep learning,'' \emph{Proc.\ IEEE}, vol.\ 111,
+            no.\ 5, 2023.
+      \item Y. Mao, O. Dizdar, B. Clerckx, R. Schober, P. Popovski, and
+            H. V. Poor, ``Rate-splitting multiple access: Fundamentals,
+            survey, and future research trends,'' \emph{IEEE Commun.\
+            Surveys Tuts.}, vol.\ 24, no.\ 4, 2022.
+    \end{enumerate}
+    \textbf{Tools:} MATLAB (SPT/CommT/DLT) \textbullet\ NVIDIA
+    Sionna \textbullet\ this talk's code
+  \end{columns}
+  \note{[S69, 0.5 min | clock 1:25] Do not read --- point: ``fifteen
+  well-chosen surveys and landmark papers; the handout has the same list.''
+  Every item is a genuine, widely-cited work; volume/number details were
+  compiled from memory and are worth a 5-minute spot check before printing.}
+\end{frame}
+
+% --- S70 -----------------------------------------------------------------
+\begin{frame}[standout]
+  Thank you!
+  \vspace{4mm}
+
+  \normalsize
+  Questions --- now, or anytime:\\[2mm]
+  \texttt{ipresearch7@gmail.com}\\[4mm]
+  \small Slides, MATLAB demos \& Python verification code ship together ---
+  ask me for the archive.
+  \note{[S70 | clock 1:25 $\to$ Q\&A buffer to 1:30] Land warmly; invite
+  collaboration explicitly --- faculty for joint proposals, scholars for
+  co-supervision conversations. Keep MATLAB open: the best Q\&A moments reuse
+  a demo with a parameter changed live.}
+\end{frame}

@@ -1,0 +1,28 @@
+% RIS-aided link geometry (slides 30/31) -- native TikZ
+\begin{tikzpicture}
+  % BS
+  \node[blkb, minimum width=13mm] (bs) at (0,0) {BS};
+  \draw[thick] (bs.north) -- ++(0,3mm) -- ++(-2mm,3mm) ++(2mm,-3mm) -- ++(2mm,3mm);
+  % RIS panel
+  \begin{scope}[shift={(5.2,2.3)}, rotate=-14]
+    \draw[thick, fill=accent!12] (-1.15,-0.62) rectangle (1.15,0.62);
+    \foreach \x in {-0.92,-0.46,0,0.46,0.92}
+      \foreach \y in {-0.4,0,0.4}
+        \draw[fill=accent!45, draw=accent] (\x-0.14,\y-0.11) rectangle (\x+0.14,\y+0.11);
+  \end{scope}
+  \node[lab] at (5.2,3.45) {RIS: $N$ tunable elements,
+    $\Theta=\mathrm{diag}(\beta_n e^{j\theta_n})$};
+  % UE
+  \node[blk, minimum width=11mm] (ue) at (9.6,-0.2) {UE};
+  % obstacle
+  \draw[fill=gray!35, draw=gray] (4.35,-0.85) rectangle (5.35,0.75);
+  \node[lab, gray] at (4.85,-1.12) {blockage};
+  % links
+  \draw[arr, cblue, very thick] (0.8,0.55) -- node[lab, above, sloped]{$G$ (BS$\to$RIS)} (4.25,2.15);
+  \draw[arr, cblue, very thick] (6.2,2.1) -- node[lab, above, sloped]{$h_r$ (RIS$\to$UE)} (9.25,0.35);
+  \draw[arr, gray, dashed, thick] (0.9,0.0) -- node[lab, below]{$h_d$ (weak / blocked)} (9.0,-0.2);
+  % equation
+  \node[lab, align=center] at (4.9,-1.9)
+    {$y=\left(\bm h_r^{H}\,\Theta\, \bm G + h_d^{H}\right)x+n
+     \qquad\text{path loss}\ \propto (d_1 d_2)^{-\alpha}\ \text{(dyadic)}$};
+\end{tikzpicture}

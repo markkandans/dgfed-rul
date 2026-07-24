@@ -1,0 +1,152 @@
+% ======================= Section 2: New spectrum frontiers (S6-S11) =======
+\section{New Spectrum Frontiers}
+
+% --- S6 ------------------------------------------------------------------
+\begin{frame}{The 6G spectrum landscape}
+  \centering
+  \includegraphics[width=0.8\textwidth]{fig_spectrum_landscape.png}
+  \begin{itemize}\itemsep1pt
+    \item Sub-6: coverage workhorse, congested \quad\textbullet\quad FR2 mmWave:
+          deployed, niche
+    \item \alert{FR3 (7--24 GHz)}: the pragmatic 6G capacity band;
+          WRC-23 identified new IMT bands (e.g.\ around 4.4--4.8, 7.1--8.4,
+          14.8--15.35\,GHz, region-dependent)
+    \item Sub-THz 100--300\,GHz: the research frontier
+  \end{itemize}
+  \note{[S6, 1 min | clock 0:06] Orient the audience on the log axis. 6G is
+  NOT ``just THz'' --- first commercial 6G capacity will most likely come from
+  FR3. Keep sub-THz honest: research frontier, short links.}
+\end{frame}
+
+% --- S7 ------------------------------------------------------------------
+\begin{frame}{FR3 / upper mid-band: the pragmatic 6G band}
+  \begin{itemize}\itemsep2pt
+    \item 7--15\,GHz: $2$--$4\times$ more bandwidth than C-band with
+          \emph{manageable} path loss --- the coverage--capacity compromise
+    \item Same physical aperture $\Rightarrow$ $4$--$9\times$ more antenna
+          elements than at 3.5\,GHz: massive MIMO scales \emph{naturally}
+    \item Coexistence with incumbents (satellite, radar) $\Rightarrow$ sharing
+          and sensing become part of the PHY job
+    \item DSP price: wider bandwidth $\times$ bigger arrays $=$ beam squint,
+          calibration, channel-estimation burden
+  \end{itemize}
+  \note{[S7, 1 min | clock 0:07] Explain why operators love FR3: reuse the
+  macro grid. The antenna-count argument: element spacing scales with
+  wavelength, so the same rooftop panel holds an order of magnitude more
+  elements. Foreshadow Section 4 (arrays) via the last bullet.}
+\end{frame}
+
+% --- S8 ------------------------------------------------------------------
+\begin{frame}{mmWave: what a decade taught us}
+  \begin{columns}[T]
+    \column{0.58\textwidth}
+    \begin{itemize}\itemsep2pt
+      \item FR2 works --- but blockage (hand/body 10--25\,dB), rain of small
+            cells, beam management overhead limited rollout
+      \item Killer app became fixed wireless access, not mobility
+      \item \textbf{Lesson 1:} link-budget math wins arguments
+      \item \textbf{Lesson 2:} beam training overhead is a \emph{rate} tax
+    \end{itemize}
+    \column{0.4\textwidth}
+    \centering
+    \begin{tikzpicture}[scale=0.82]
+      \node[blkb, minimum width=10mm] (bs) at (0,2.1) {BS};
+      \draw[fill=gray!35, draw=gray] (1.5,0) rectangle (2.3,2.6);
+      \node[lab, gray] at (1.9,-0.3) {building};
+      \node[lab] (ue) at (3.6,0.9) {\antsym\ UE};
+      \draw[arr, corange, thick] (0.5,2.3) -- (1.48,2.0);
+      \node[lab, corange] at (0.9,2.6) {blocked};
+      \draw[arr, caqua, thick] (0.4,2.0) to[bend right=25]
+        node[lab, below, sloped]{reflection} (3.3,0.6);
+    \end{tikzpicture}
+  \end{columns}
+  \note{[S8, 1 min | clock 0:08] Be honest about mmWave: not a failure, a
+  recalibration. The two lessons are design constraints for everything that
+  follows --- sub-THz inherits both, amplified. Anecdote if time: a hand on the
+  phone can erase 20 dB.}
+\end{frame}
+
+% --- S9 ------------------------------------------------------------------
+\begin{frame}{Sub-THz channels: 100--300\,GHz}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{equation*}
+      \mathrm{PL}(f,d) =
+      \underbrace{\left(\tfrac{4\pi f d}{c}\right)^{2}}_{\text{spreading}}
+      \cdot
+      \underbrace{e^{\kappa_{\mathrm{abs}}(f)\,d}}_{\text{molecular abs.}}
+    \end{equation*}
+    \begin{itemize}\itemsep1pt
+      \item O$_2$/H$_2$O resonances at 60, 119, 183, 325\,GHz carve
+            \alert{transmission windows}
+      \item Channel: sparse, specular, LoS-dominated
+      \item Consequences: short links, pencil beams mandatory
+    \end{itemize}
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig_thz_absorption.png}
+  \end{columns}
+  \note{[S9, 1.5 min | clock 0:09] The one equation to remember: spreading loss
+  grows with $f^2$ at fixed aperture, and the exponential absorption term is
+  frequency-selective. Point at W/D/G windows on the plot --- those are where
+  sub-THz systems will live. Sparsity is good news for compressed sensing
+  later (Section 4).}
+\end{frame}
+
+% --- S10 -----------------------------------------------------------------
+\begin{frame}{Hardware impairments dominate at high bands}
+  \begin{columns}[T]
+    \column{0.52\textwidth}
+    Rapp PA model (AM/AM):
+    \begin{equation*}
+      g(A)=\frac{G\,A}{\left[1+\left(\frac{GA}{A_{\mathrm{sat}}}\right)^{2p}
+            \right]^{1/2p}}
+    \end{equation*}
+    Wiener phase noise:
+    \begin{equation*}
+      \varphi[n{+}1]=\varphi[n]+w[n],\;\;
+      w\sim\mathcal N\!\left(0,\,4\pi^{2}f_c^{2}c\,T_s\right)
+    \end{equation*}
+    \begin{itemize}\itemsep1pt
+      \item PA efficiency falls with $f$; back-off $\Rightarrow$ PAPR is a
+            first-class metric
+      \item Phase noise power $\propto f_c^{2}$; low-resolution ADCs to save
+            power
+    \end{itemize}
+    \column{0.46\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig_pa_rapp.png}
+  \end{columns}
+  \note{[S10, 1.5 min | clock 0:10:30] ``Dirty RF'' mindset: at 140 GHz the
+  waveform must be designed FOR the hardware. Two knobs to remember: PAPR
+  (decides PA back-off, hence coverage) and phase-noise robustness (decides
+  subcarrier spacing / single-carrier choice). This is the bridge to
+  waveforms.}
+\end{frame}
+
+% --- S11 -----------------------------------------------------------------
+\begin{frame}{Implications for waveform design}
+  \centering
+  \small
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    \textbf{Requirement} & sub-6 & FR3 & mmWave & sub-THz \\
+    \midrule
+    Low PAPR                  & nice  & nice  & want & \alert{need} \\
+    Phase-noise robustness    & ---   & ---   & want & \alert{need} \\
+    Doppler robustness        & HST   & HST   & want & want \\
+    Spectral confinement      & want  & want  & nice & nice \\
+    MIMO compatibility        & \alert{need} & \alert{need} & \alert{need} & want \\
+    \bottomrule
+  \end{tabular}
+  \vspace{2mm}
+  \begin{itemize}
+    \item No single waveform wins every column $\Rightarrow$ expect
+          \alert{scenario-dependent waveform choices} in 6G
+    \item CP-OFDM's weak spots are exactly the columns that harden at high bands
+  \end{itemize}
+  \note{[S11, 1 min | clock 0:12] Read the table column-wise: the further
+  right, the more the requirements shift toward PAPR and phase noise, where
+  OFDM is weakest. Transition: ``So let us give OFDM its fair trial ---
+  Section 3.''}
+\end{frame}

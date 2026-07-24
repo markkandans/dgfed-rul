@@ -1,0 +1,198 @@
+% ======================= Section 3: Waveforms beyond OFDM (S12-S20) =======
+\section{Waveforms Beyond OFDM}
+
+% --- S12 -----------------------------------------------------------------
+\begin{frame}{CP-OFDM recap: why it won 4G and 5G}
+  \begin{equation*}
+    x[n]=\frac{1}{\sqrt N}\sum_{k=0}^{N-1}X_k\,e^{j2\pi kn/N},
+    \qquad\text{CP: linear conv.}\;\to\;\text{circular conv.}\;\to\;
+    \text{1-tap FDE}
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item One FFT turns a frequency-selective channel into $N$ flat channels
+    \item MIMO-friendly (per-subcarrier processing), flexible numerology,
+          gigantic ecosystem
+    \item Hidden assumption: \alert{channel constant over one symbol}
+          (quasi-static)
+    \item That assumption is precisely what high mobility and high carriers
+          break
+  \end{itemize}
+  \note{[S12, 1 min | clock 0:13] Quick refresher --- the audience knows OFDM,
+  so frame it as ``what exactly did we sign up for?'' The CP-makes-it-circular
+  trick is the whole magic; note it costs 7--25 percent overhead. Set up the
+  fall: the one-tap equalizer only exists if the channel sits still for a
+  symbol.}
+\end{frame}
+
+% --- S13 -----------------------------------------------------------------
+\begin{frame}{Where OFDM breaks: high Doppler, high bands}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{equation*}
+      P_{\mathrm{ICI}}\;\lesssim\;\frac{(\pi f_d T_s)^{2}}{3}
+    \end{equation*}
+    \begin{itemize}\itemsep2pt
+      \item Doppler spread destroys orthogonality $\Rightarrow$ ICI
+      \item 500\,km/h at 28\,GHz: $f_d\!\approx\!13$\,kHz
+            ($\varepsilon\!\approx\!0.11$ even at 120\,kHz spacing)
+      \item PAPR $\sim$10--12\,dB $\Rightarrow$ PA back-off --- worst fit for
+            THz PAs
+      \item Phase noise adds CPE + ICI on top
+    \end{itemize}
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig_ici_doppler.png}
+  \end{columns}
+  \note{[S13, 1 min | clock 0:14] Walk the log-log plot: ICI grows with the
+  square of normalized Doppler; the pink marker is our 500 km/h working point
+  --- ICI around $-17$\,dB, i.e.\ an SINR ceiling near 17 dB no matter how much
+  power you pour in. That ceiling becomes the BER floor in Demo 1.}
+\end{frame}
+
+% --- S14 -----------------------------------------------------------------
+\begin{frame}{DFT-s-OFDM and the single-carrier comeback}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{equation*}
+      \mathbf X = F_M\,\mathbf s \quad\text{(DFT spread)}
+    \end{equation*}
+    \begin{itemize}\itemsep2pt
+      \item Quasi single-carrier envelope: $\approx$3\,dB PAPR advantage
+      \item Already the 5G uplink workhorse --- proven at scale
+      \item Sub-THz proposals: SC-FDE blocks; equalizer complexity moves to RX
+      \item Leading candidate for 6G high bands in early 3GPP discussion
+    \end{itemize}
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig_papr_ccdf.png}
+  \end{columns}
+  \note{[S14, 1 min | clock 0:15] The CCDF plot is simulated, not schematic:
+  QPSK, 1200 tones. Read off the 1e-3 point: about 3 dB less back-off, which
+  at THz translates almost 1:1 into transmit power and hence link range. The
+  old single-carrier vs multicarrier war is back, and this time single-carrier
+  has a real case.}
+\end{frame}
+
+% --- S15 -----------------------------------------------------------------
+\begin{frame}{Filtered multicarrier: lessons of the 5G bake-off}
+  \begin{itemize}\itemsep2pt
+    \item Candidates circa 2016: FBMC, UFMC, GFDM, f-OFDM --- better spectral
+          confinement, relaxed synchronicity
+    \item Why they lost: MIMO integration pain (FBMC/OQAM), complexity,
+          marginal gains once windowing was allowed
+    \item What survived: spectral shaping as a \emph{transmitter
+          implementation choice} below the standard
+    \item \textbf{Meta-lesson:} ecosystem inertia is a design constraint ---
+          a radical waveform needs \alert{radical} gains, not 0.5\,dB
+  \end{itemize}
+  \note{[S15, 1 min | clock 0:16] Flex slide --- compress to 20 seconds if
+  behind (say only the meta-lesson). This history is why OTFS/AFDM must clear
+  a high bar: they must enable something OFDM fundamentally cannot do, which
+  is exactly the high-Doppler regime, not just look prettier in a PSD plot.}
+\end{frame}
+
+% --- S16 -----------------------------------------------------------------
+\begin{frame}{OTFS I: thinking in delay--Doppler}
+  \begin{equation*}
+    r(t)=\iint h(\tau,\nu)\,s(t-\tau)\,e^{j2\pi\nu(t-\tau)}\,
+    \mathrm d\tau\,\mathrm d\nu
+  \end{equation*}
+  \begin{columns}[T]
+    \column{0.55\textwidth}
+    \begin{itemize}\itemsep1pt
+      \item In delay--Doppler (DD) the channel is \alert{sparse and
+            quasi-static}: a few $(\tau_i,\nu_i)$ taps $=$ physical reflectors
+            with range \& velocity
+      \item Each DD symbol rides the \emph{entire} TF channel
+            $\Rightarrow$ full-diversity potential
+    \end{itemize}
+    \column{0.43\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig_tf_vs_dd.png}
+  \end{columns}
+  \note{[S16, 1.5 min | clock 0:17] The domain-change story, told with our own
+  simulation: left panel, the TF response of the exact channel used in Demo 1
+  --- fading everywhere; right panel, the SAME channel in DD --- a handful of
+  still taps. Analogy: TF is the weather, DD is the map of what causes the
+  weather.}
+\end{frame}
+
+% --- S17 -----------------------------------------------------------------
+\begin{frame}{OTFS II: transceiver structure}
+  \begin{equation*}
+    X_{\mathrm{tf}}[n,m]=\tfrac{1}{\sqrt{NM}}
+    \sum_{k=0}^{N-1}\sum_{l=0}^{M-1}x[k,l]\,
+    e^{\,j2\pi\left(\frac{nk}{N}-\frac{ml}{M}\right)}\qquad\text{(ISFFT)}
+  \end{equation*}
+  \centering
+  \resizebox{0.98\textwidth}{!}{\input{tikz/otfs_chain}}
+  \begin{itemize}\itemsep1pt
+    \item OTFS $=$ 2D pre-/post-processing wrapped around an OFDM modem
+          $\Rightarrow$ attractive migration path
+  \end{itemize}
+  \note{[S17, 1.5 min | clock 0:18:30] Walk the chain left to right: ISFFT
+  spreads every DD symbol over the whole TF frame; Heisenberg transform is
+  just the OFDM modulator in disguise; receiver undoes both. Emphasize the
+  implementation message: no exotic hardware, an extra 2D FFT pair. Pilots: a
+  single DD impulse with a guard box sounds the whole channel.}
+\end{frame}
+
+% --- S18 -----------------------------------------------------------------
+\begin{frame}{OTFS III: input--output relation and detection}
+  \begin{equation*}
+    y[k,l]\;\approx\;\sum_{i}h_i\;
+    x\!\left[(k-k_i)_N,\,(l-l_i)_M\right]e^{j2\pi\phi_i}\;+\;w[k,l]
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item A \alert{2D twisted circular convolution}: each tap shifts data in
+          delay and Doppler and adds a phase
+    \item Sparsity $\Rightarrow$ message-passing / low-complexity MMSE
+          detectors
+    \item Costs: frame-level latency, detection complexity, fractional-Doppler
+          leakage
+    \item Status check (honest): rich literature, strong results ---
+          \emph{not yet} in 3GPP normative work
+  \end{itemize}
+  \note{[S18, 1 min | clock 0:20] The relation is OFDM's one-tap story
+  upgraded to 2D: instead of a scalar per subcarrier, a small set of shifts of
+  the whole grid. Detection is where OTFS pays its bill --- mention MP
+  detectors exploit the sparsity. Keep the standards status honest; that
+  credibility pays off in Q\&A.}
+\end{frame}
+
+% --- S19 -----------------------------------------------------------------
+\begin{frame}{AFDM: the chirp-based challenger}
+  \begin{equation*}
+    \phi_m[n]=\tfrac{1}{\sqrt N}\,
+    e^{\,j2\pi\left(c_1 n^{2}+\frac{mn}{N}+c_2 m^{2}\right)}
+    \qquad\text{(discrete affine Fourier basis)}
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item Multiplex on \alert{chirps}; tune $c_1$ to the expected Doppler span
+          $\Rightarrow$ all paths separate in the DAFT domain
+    \item Full diversity in doubly dispersive channels with \emph{1D,
+          single-symbol} processing (vs OTFS frame-level)
+    \item FFT-based implementation; rising fast in the literature since 2023
+    \item Open: MIMO integration, pilot design, robustness studies at scale
+  \end{itemize}
+  \note{[S19, 1 min | clock 0:21] One-slide take: AFDM gets OTFS-like
+  diversity with lower latency because it works symbol-by-symbol. The chirp
+  parameter is matched to max Doppler --- a nice example of channel-aware basis
+  design. If pressed for time, the sentence to keep: ``same benefit, smaller
+  reorganization of the transceiver.''}
+\end{frame}
+
+% --- S20 -----------------------------------------------------------------
+\begin{frame}{Waveform scorecard}
+  \centering
+  \includegraphics[width=0.62\textwidth]{fig_waveform_scorecard.png}
+  \demoslot{1 (3.5 min)}{\textbf{OFDM vs OTFS at 500\,km/h} --- watch the BER
+    floor appear on screen, live. \hfill\src{matlab/demo1\_ofdm\_vs\_otfs}}
+  \note{[S20 + DEMO 1, 1+3.5 min | clock 0:22] Summarize: OFDM keeps the
+  low-mobility mainstream; DD-domain waveforms own high mobility and pair
+  naturally with sensing. THEN SWITCH TO MATLAB (pre-typed command:
+  run\_demo). While it runs: recall the ICI ceiling from S13, predict the
+  floor, let the plot confirm it. Expected: OFDM floors at BER a few times
+  1e-2, OTFS falls through 1e-4. If MATLAB misbehaves: appendix slide A1 has
+  the exact expected output. Clock check: demo done by 0:26:30.}
+\end{frame}

@@ -1,0 +1,19 @@
+# Python virtual environment (recreate with: python3 -m venv .venv)
+.venv/
+__pycache__/
+*.pyc
+
+# LaTeX build artifacts (keep the compiled *.pdf)
+*.aux
+*.log
+*.nav
+*.snm
+*.out
+*.toc
+*.vrb
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# macOS
+.DS_Store

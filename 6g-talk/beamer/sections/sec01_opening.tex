@@ -1,0 +1,101 @@
+% ======================= Section 1: Opening & motivation (S1-S5) ==========
+% --- S1 (before \section so the deck opens on the title) -----------------
+{\setbeamertemplate{footline}{}
+\begin{frame}
+  \titlepage
+  \note{[S1, 0.5 min | clock 0:00] Welcome; one-line hook: ``I want to convince
+  you that 6G is, at its core, a signal processing problem.'' Mention the five
+  live MATLAB experiments woven through the talk. Slides and code link at the
+  end.}
+\end{frame}}
+
+\section{Opening \& Motivation}
+
+% --- S2 ------------------------------------------------------------------
+\begin{frame}{Six generations in forty years}
+  \centering
+  \includegraphics[width=0.78\textwidth]{fig_evolution_timeline.png}
+  \begin{itemize}\itemsep1pt
+    \item Each decade: a new generation, a $10$--$100\times$ peak-rate jump
+    \item The differentiator each time was the \alert{physical-layer signal
+          processing choice}: FDMA $\to$ TDMA $\to$ CDMA $\to$ OFDM/MIMO $\to$ mMIMO
+  \end{itemize}
+  \note{[S2, 1.5 min | clock 0:00:30] Walk the timeline left to right; stress
+  that generations are remembered by their PHY: 3G is CDMA, 4G is OFDM+MIMO.
+  Punchline: the 6G research window is open right now --- ITU framework 2023,
+  3GPP study underway, spec by about 2029. The audience's papers written this
+  year land exactly in that window.}
+\end{frame}
+
+% --- S3 ------------------------------------------------------------------
+\begin{frame}{The IMT-2030 vision (ITU-R M.2160, Nov.\ 2023)}
+  \begin{columns}[T]
+    \column{0.55\textwidth}
+    \textbf{Extended from 5G:}
+    \begin{itemize}\itemsep1pt
+      \item Immersive communication
+      \item Hyper-reliable \& low-latency
+      \item Massive communication
+    \end{itemize}
+    \textbf{Genuinely new for 6G:}
+    \begin{itemize}\itemsep1pt
+      \item \alert{Integrated sensing \& communication}
+      \item \alert{AI and communication}
+      \item Ubiquitous connectivity
+    \end{itemize}
+    \column{0.42\textwidth}
+    \begin{block}{Design values}
+      Sustainability \textbullet{} security \& resilience \textbullet{}
+      connecting the unconnected \textbullet{} interoperability
+    \end{block}
+  \end{columns}
+  \note{[S3, 1.5 min | clock 0:02] M.2160 is the official ``what is 6G''
+  document --- worth reading, it is short. Three scenarios are upgrades of the
+  5G triangle; three are new. Point out that two of the new ones (ISAC, AI)
+  are the subjects of Sections 6 and 7 --- both are signal processing problems.}
+\end{frame}
+
+% --- S4 ------------------------------------------------------------------
+\begin{frame}{KPI targets: IMT-2020 vs IMT-2030}
+  \centering
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{KPI} & \textbf{5G (IMT-2020)} & \textbf{6G (IMT-2030, research)} \\
+    \midrule
+    Peak data rate      & 20\,Gb/s          & 200\,Gb/s -- 1\,Tb/s \\
+    User-plane latency  & 1\,ms             & 0.1 -- 1\,ms \\
+    Connection density  & $10^6$/km$^2$     & $10^6$ -- $10^8$/km$^2$ \\
+    Positioning         & m-level           & cm-level (+ velocity) \\
+    Sensing             & ---               & \alert{native KPI class} \\
+    Energy              & qualitative       & first-class design value \\
+    \bottomrule
+  \end{tabular}
+  \vspace{2mm}
+  \begin{itemize}
+    \item IMT-2030 deliberately gives \emph{ranges}: targets are
+          scenario-dependent, not one number for everything
+  \end{itemize}
+  \note{[S4, 1.5 min | clock 0:03:30] Do not read every row --- highlight three:
+  10x peak rate needs new spectrum (Section 2); sensing appears as a KPI class
+  for the first time (Section 6); energy moves from marketing to KPI (Section
+  10). Warn against quoting single-number 6G KPIs --- the framework gives
+  ranges.}
+\end{frame}
+
+% --- S5 ------------------------------------------------------------------
+\begin{frame}{Why signal processing is the bottleneck \emph{and} the enabler}
+  \begin{itemize}\itemsep2pt
+    \item At sub-6\,GHz we operate close to Shannon: coding, MIMO, scheduling
+          are mature $\Rightarrow$ gains must come from \alert{new dimensions}
+    \item New dimensions on offer: bandwidth (THz), aperture (ultra-massive
+          arrays), \emph{environment} (RIS), \emph{function} (sensing),
+          \emph{semantics} (AI)
+    \item Hardware gets \emph{worse} as we go up in frequency --- DSP must
+          compensate (impairment-aware design)
+  \end{itemize}
+  \centering\includegraphics[width=0.88\textwidth]{fig_roadmap.png}
+  \note{[S5, 1 min | clock 0:05] The thesis slide. Every box on this roadmap is
+  a DSP problem wearing a systems costume. Point at the D1--D5 dots: five live
+  MATLAB experiments, one after each core section. Transition: ``New dimensions
+  start with new spectrum.''}
+\end{frame}

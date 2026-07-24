@@ -1,0 +1,122 @@
+% ============== Section 5: Reconfigurable Intelligent Surfaces (S30-S35) ==
+\section{Reconfigurable Intelligent Surfaces}
+
+% --- S30 -----------------------------------------------------------------
+\begin{frame}{RIS: programming the channel itself}
+  \centering
+  \resizebox{0.8\textwidth}{!}{\input{tikz/ris_geometry}}
+  \note{[S30, 1 min | clock 0:40, after Demo 2] Paradigm framing: for a
+  century the channel was fate --- estimate it, adapt to it. A RIS makes part
+  of the environment a design variable: hundreds of passive elements, each
+  adding a controllable phase to the reflection, steered by a low-rate control
+  link. No PAs, no ADCs on the panel.}
+\end{frame}
+
+% --- S31 -----------------------------------------------------------------
+\begin{frame}{The cascaded channel model}
+  \begin{equation*}
+    y=\left(\bm h_r^{H}\,\Theta\,\bm G+h_d^{H}\right)x+n,
+    \qquad
+    \Theta=\mathrm{diag}\!\left(\beta_1 e^{j\theta_1},\dots,
+                                \beta_N e^{j\theta_N}\right)
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item Product path loss $\propto (d_1 d_2)^{-\alpha}$: the
+          \alert{fundamental tax of passivity} --- both hops paid in full
+    \item Estimation burden: cascaded coefficients scale as $N\!\times\!M$;
+          structure (sparsity, common subspaces) to the rescue
+    \item Large $N$ at short range $\Rightarrow$ the RIS itself operates in the
+          near field
+  \end{itemize}
+  \note{[S31, 1 min | clock 0:41] The equation is deceptively simple; the two
+  hard truths live under it: dyadic path loss (why RIS placement matters
+  enormously) and the estimation burden (you cannot observe the RIS channel
+  directly --- the panel has no receivers). Both are active research veins.}
+\end{frame}
+
+% --- S32 -----------------------------------------------------------------
+\begin{frame}{Phase optimization and the $N^2$ law}
+  \begin{equation*}
+    \theta_n^{\star}=\arg(h_d)-\arg\!\left([\bm h_r]_n^{*}[\bm G]_n\right)
+    \;\;\Rightarrow\;\;
+    P_{\mathrm{rx}}\propto\Big(\textstyle\sum_n |[\bm h_r]_n||[\bm G]_n|\Big)^{2}
+    \sim N^{2}
+  \end{equation*}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{itemize}\itemsep1pt
+      \item Co-phasing: amplitude $\propto N$ $\Rightarrow$ power
+            $\propto N^2$ ($+6$\,dB per doubling)
+      \item Random phases: 2D random walk $\Rightarrow$ power $\propto N$
+      \item Multi-user / MIMO: non-convex $\Rightarrow$ SDR, manifold,
+            alternating optimization
+    \end{itemize}
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig_demo3_ris_scaling.png}
+  \end{columns}
+  \note{[S32, 1.5 min | clock 0:42] Derive the closed form in one breath ---
+  single-user SNR max separates per element; every element should cancel its
+  cascade phase. The plot is our simulation with the analytic overlays: slopes
+  2.0 and 1.0 on log-log. But remember the $N^2$ rides on top of the dyadic
+  loss --- this is Demo 3's punchline in three minutes.}
+\end{frame}
+
+% --- S33 -----------------------------------------------------------------
+\begin{frame}{Active RIS and other variants}
+  \begin{equation*}
+    y=\left(\bm h_r^{H}\Theta\,\bm G\right)x
+      +\underbrace{\bm h_r^{H}\Theta\,\bm n_{\mathrm{RIS}}}_{\text{amplified noise}}
+      +n
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item Passive gain often eaten by dyadic loss $\Rightarrow$ \alert{active
+          RIS}: reflection with amplification --- and an amplified-noise tax
+    \item Variants: STAR-RIS (transmit \emph{and} reflect), beyond-diagonal
+          RIS, holographic surfaces
+    \item The uncomfortable benchmark: does an active RIS beat a plain relay /
+          small cell at the same cost and power? Must be argued per scenario
+  \end{itemize}
+  \note{[S33, 1 min | clock 0:43:30] Keep the field honest: the moment you add
+  amplifiers you must compare against the century-old alternative --- a relay.
+  The interesting regime for passive RIS: cheap, dense, conformal surfaces
+  where relays are impractical (facades, indoor panels). STAR-RIS one-liner:
+  serve both sides of the surface.}
+\end{frame}
+
+% --- S34 -----------------------------------------------------------------
+\begin{frame}{Deployment: where RIS actually helps}
+  \begin{itemize}\itemsep2pt
+    \item Sweet spots: mmWave/sub-THz \alert{blockage bypass}, indoor dead
+          zones, localized capacity boosts
+    \item Placement rule of thumb: near TX or near RX --- mid-path maximizes the
+          dyadic loss penalty
+    \item Overheads that gate practicality: channel estimation and the control
+          link, both scaling with $N$
+    \item Field trials (metro, industrial) encouraging; standardization
+          pre-normative (ETSI ISG RIS; 3GPP interest)
+  \end{itemize}
+  \note{[S34, 1 min | clock 0:44:30] Deployment intuition via the dyadic law:
+  $(d_1 d_2)$ is minimized at the ends, maximized in the middle --- put the
+  mirror next to the lamp or next to the book, not halfway. The overhead
+  bullet is the researcher's opening: estimation with almost no observations
+  is a beautiful problem.}
+\end{frame}
+
+% --- S35 -----------------------------------------------------------------
+\begin{frame}{RIS: open problems}
+  \begin{itemize}\itemsep2pt
+    \item CSI acquisition with no RF chains on the panel
+    \item Wideband behavior: one phase per element, many subcarriers
+    \item EM-consistent models: mutual coupling, non-ideal reflection
+    \item RIS-aided sensing and localization: surfaces as programmable
+          landmarks
+  \end{itemize}
+  \demoslot{3 (2.5 min)}{\textbf{The $N^2$ law, live}: SNR gain from 16 to
+    1024 elements, random vs optimized phases.
+    \hfill\src{matlab/demo3\_ris\_gain}}
+  \note{[S35 + DEMO 3, 0.5+2.5 min | clock 0:45:30] Rapid-fire open list, then
+  MATLAB. Demo 3 is the shortest: the two scaling lines draw themselves; ask
+  the audience to call the slope difference before the fit prints (2 vs 1).
+  If MATLAB fails: appendix A3. Demo done by ~0:48:30.}
+\end{frame}

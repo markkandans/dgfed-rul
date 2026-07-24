@@ -1,0 +1,41 @@
+% Hybrid analog-digital beamforming architecture (slide 23) -- native TikZ
+\begin{tikzpicture}[node distance=3mm and 7mm]
+  % ---------------- fully digital (left) ----------------
+  \node[lab] (s1) {$N_s$ streams};
+  \node[blkb, right=of s1, minimum height=16mm] (bb1) {Digital\\precoder};
+  \node[blk, right=of bb1, yshift=7mm, minimum width=12mm] (rf1) {RF chain};
+  \node[blk, right=of bb1, yshift=-7mm, minimum width=12mm] (rf2) {RF chain};
+  \node[lab] at ($(rf1)!0.5!(rf2)$) {$\vdots\; N_t$};
+  \foreach \i/\n in {rf1/a1, rf2/a2}{
+    \node[right=4mm of \i] (\n) {\antsym};}
+  \draw[arr] (s1) -- (bb1);
+  \draw[arr] (bb1.east|-rf1) -- (rf1); \draw[arr] (bb1.east|-rf2) -- (rf2);
+  \draw[arr] (rf1) -- (a1); \draw[arr] (rf2) -- (a2);
+  \node[lab, align=center] at ($(bb1)!0.55!(a1)+(0,14mm)$)
+    {\textbf{Fully digital}: one RF chain \emph{per antenna}\\
+     $N_t$ ADC/DAC pairs -- power \& cost prohibitive at high bands};
+
+  % ---------------- hybrid (right) ----------------
+  \begin{scope}[xshift=72mm]
+  \node[lab] (s2) {$N_s$ streams};
+  \node[blkb, right=of s2, minimum height=16mm] (bb2) {$F_{\mathrm{BB}}$\\ \scriptsize digital};
+  \node[blk, right=of bb2, yshift=7mm, minimum width=12mm] (rf3) {RF chain};
+  \node[blk, right=of bb2, yshift=-7mm, minimum width=12mm] (rf4) {RF chain};
+  \node[lab] at ($(rf3)!0.5!(rf4)$) {$N_{\mathrm{RF}}\!\ll\! N_t$};
+  \node[blk, right=17mm of bb2, minimum height=16mm, minimum width=13mm] (ps)
+    {$F_{\mathrm{RF}}$\\ \scriptsize phase\\[-3pt]\scriptsize shifters};
+  \node[right=4mm of ps, yshift=7mm] (a3) {\antsym};
+  \node[right=4mm of ps] (a4) {\antsym};
+  \node[right=4mm of ps, yshift=-7mm] (a5) {\antsym};
+  \node[lab, right=1mm of a4, xshift=2mm] {$N_t$};
+  \draw[arr] (s2) -- (bb2);
+  \draw[arr] (bb2.east|-rf3) -- (rf3); \draw[arr] (bb2.east|-rf4) -- (rf4);
+  \draw[arr] (rf3) -- (ps.west|-rf3); \draw[arr] (rf4) -- (ps.west|-rf4);
+  \draw[arr] (ps.east|-a3) -- (a3); \draw[arr] (ps.east|-a4) -- (a4);
+  \draw[arr] (ps.east|-a5) -- (a5);
+  \node[lab, align=center] at ($(ps)+(-8mm,17.5mm)$)
+    {\textbf{Hybrid}: few RF chains + analog phase network\\
+     $y = W_{\mathrm{BB}}^{H}W_{\mathrm{RF}}^{H}
+          \left(H F_{\mathrm{RF}}F_{\mathrm{BB}}\,s + n\right)$};
+  \end{scope}
+\end{tikzpicture}

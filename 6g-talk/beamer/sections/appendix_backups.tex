@@ -1,0 +1,45 @@
+% ============== Appendix: pre-computed demo backups (A1-A5) ===============
+\appendix
+
+\begin{frame}{Backup A1: pre-computed result --- Demo 1 (OFDM vs OTFS)}
+  \centering
+  \includegraphics[width=0.9\textwidth]{backup_demo1.png}
+  \note{[A1 -- only if Demo 1 fails live] Same code, pre-run: OFDM floors
+  near 3e-2 from ICI; OTFS falls past 1e-4 by 20 dB. Right panel: the
+  delay-Doppler channel the frame actually saw.}
+\end{frame}
+
+\begin{frame}{Backup A2: pre-computed result --- Demo 2 (hybrid beamforming)}
+  \centering
+  \includegraphics[width=0.95\textwidth]{backup_demo2.png}
+  \note{[A2 -- only if Demo 2 fails live] Left: 64-element ULA patterns at
+  three steering angles, 18 dB peak gain. Right: OMP hybrid with 4 RF chains
+  tracks fully digital within a fraction of a bit/s/Hz.}
+\end{frame}
+
+\begin{frame}{Backup A3: pre-computed result --- Demo 3 (RIS $N^2$ law)}
+  \centering
+  \includegraphics[width=0.62\textwidth]{backup_demo3.png}
+  \note{[A3 -- only if Demo 3 fails live] Log-log slopes: optimized phases
+  2.0 (the N-squared law, +6 dB per doubling), random phases 1.0. Analytic
+  overlays sit on top of the simulation.}
+\end{frame}
+
+\begin{frame}{Backup A4: pre-computed result --- Demo 4 (ISAC range--Doppler)}
+  \centering
+  \includegraphics[width=0.66\textwidth]{backup_demo4.png}
+  \note{[A4 -- only if Demo 4 fails live] Two targets recovered within one
+  resolution bin each (40 m / +15 m/s and 75 m / -25 m/s) from a frame
+  carrying random QPSK payload. Second peak a few dB lower: weaker RCS plus
+  bin-straddling loss.}
+\end{frame}
+
+\begin{frame}{Backup A5: pre-computed result --- Demo 5 (learned estimation)}
+  \centering
+  \includegraphics[width=0.62\textwidth]{backup_demo5.png}
+  \note{[A5 -- only if Demo 5 fails live] LS tracks sigma-squared exactly;
+  ideal MMSE gains ~9-10 dB using the true statistics; the learned estimator
+  matches MMSE within a fraction of a dB having seen only data. (Backup uses
+  the Python learned-linear stand-in; the live MATLAB demo trains a small NN
+  with the same outcome.)}
+\end{frame}

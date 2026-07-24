@@ -1,0 +1,111 @@
+% ============== Section 9: Coverage from the sky & new media (S56-S60) ====
+\section{Coverage from the Sky \& New Media}
+
+% --- S56 -----------------------------------------------------------------
+\begin{frame}{Non-terrestrial networks: the 3D architecture}
+  \begin{columns}[T]
+    \column{0.55\textwidth}
+    \begin{itemize}\itemsep2pt
+      \item Layers: \alert{LEO} mega-constellations (300--1200\,km), HAPS
+            ($\sim$20\,km), UAV relays
+      \item 6G goal: one 3GPP-native fabric --- common waveform family,
+            seamless sky$\leftrightarrow$ground mobility
+      \item Direct-to-device NTN is already commercially real; scaling it is
+            the 6G task
+    \end{itemize}
+    \column{0.42\textwidth}
+    \centering
+    \begin{tikzpicture}[scale=0.78]
+      \draw[thick, accent!60] (0,0) arc (200:340:2.6 and 0.75);
+      \node[lab] at (2.5,-0.75) {ground};
+      \node[blkb, minimum width=9mm, minimum height=5mm] (leo) at (0.6,3.4) {LEO};
+      \node[blk, minimum width=9mm, minimum height=5mm] (haps) at (3.4,2.3) {HAPS};
+      \node[lab] (uav) at (1.9,1.35) {UAV};
+      \node[lab] (ue) at (2.4,-0.15) {\antsym};
+      \draw[arr, cblue] (leo) -- (ue); \draw[arr, cblue] (haps) -- (ue);
+      \draw[arr, cblue] (uav) -- (ue);
+      \draw[arr, dashed, gray] (leo) -- node[lab, above]{ISL} ++(-2.1,0.35);
+    \end{tikzpicture}
+  \end{columns}
+  \note{[S56, 1 min | clock 1:15] Coverage becomes three-dimensional: three
+  altitude layers with different delay/Doppler/link-budget personalities.
+  Emphasize the standard-native ambition: 5G retrofitted NTN in Rel-17; 6G
+  intends to design for it from day one. Phones already talk to satellites ---
+  the audience's phones, in some markets.}
+\end{frame}
+
+% --- S57 -----------------------------------------------------------------
+\begin{frame}{The LEO signal processing problem: Doppler}
+  \begin{equation*}
+    f_D(t)=\frac{f_c}{c}\,v_{\mathrm{rel}}(t),
+    \qquad v_{\mathrm{sat}}\approx 7.6\,\text{km/s}
+    \;\Rightarrow\; \pm 25\,\text{ppm}
+    \;\;(\pm 50\,\text{kHz at 2\,GHz})
+  \end{equation*}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{itemize}\itemsep1pt
+      \item Doppler \emph{rate} up to $\sim$kHz/s near zenith; RTT 2--25\,ms
+            breaks HARQ timing
+      \item The gift: \alert{ephemeris is known} $\Rightarrow$ pre-compensate,
+            track only the residual
+      \item DD-domain waveforms (Section 3) are natural fits here
+    \end{itemize}
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig_leo_doppler.png}
+  \end{columns}
+  \note{[S57, 1 min | clock 1:16] The S-curve is computed from real orbital
+  geometry (600 km). Read it: half the swing happens in the two minutes
+  around zenith --- that is the tracking stress test. Then the twist that makes
+  NTN tractable: unlike a car, a satellite tells you its velocity in advance;
+  open-loop pre-compensation removes 95 percent of the problem.}
+\end{frame}
+
+% --- S58 -----------------------------------------------------------------
+\begin{frame}{NTN in 3GPP: status in one minute}
+  \begin{itemize}\itemsep2pt
+    \item Rel-17: NR-NTN baseline (transparent payloads, timing/Doppler
+          handling)
+    \item Rel-18/19: coverage \& mobility enhancements, IoT-NTN,
+          \alert{regenerative payloads} on the way
+    \item 6G: NTN native from the start --- inter-satellite routing,
+          store-and-forward IoT, unified mobility
+  \end{itemize}
+  \note{[S58, 0.5 min | clock 1:17] Flex slide --- one breath per bullet, or
+  skip to S59 if behind. ``Transparent vs regenerative'' in one line: bent
+  pipe versus base station in orbit.}
+\end{frame}
+
+% --- S59 -----------------------------------------------------------------
+\begin{frame}{Optical wireless and VLC}
+  \begin{itemize}\itemsep2pt
+    \item IM/DD constraint: real, non-negative signals $\Rightarrow$
+          DCO-/ACO-OFDM adaptations of familiar math
+    \item LiFi: dense indoor capacity, security by physics (light stays in the
+          room); FSO: fiber-class backhaul without the trench --- incl.\
+          ground--satellite
+    \item Challenges: alignment, ambient light, the uplink asymmetry
+    \item Honest niche: industrial floors, cabins, RF-denied environments
+  \end{itemize}
+  \note{[S59, 1 min | clock 1:17:30] Position optical as a complement, not a
+  competitor: where RF is denied or congested, photons commute. The DSP
+  detail worth stating: IM/DD kills negative amplitudes, so OFDM needs DC
+  bias or asymmetric clipping --- same toolbox, new constraint set.}
+\end{frame}
+
+% --- S60 -----------------------------------------------------------------
+\begin{frame}{Quantum-secured links (brief)}
+  \begin{itemize}\itemsep2pt
+    \item QKD: key distribution whose security rests on physics; fiber and
+          satellite demos exist
+    \item Realism: point-to-point, modest key rates $\Rightarrow$ practical
+          path is \alert{hybrid} QKD + post-quantum cryptography
+    \item For 6G: primarily a security-architecture topic, not a PHY-DSP one
+          --- scoped to one slide on purpose
+  \end{itemize}
+  \note{[S60, 0.5 min | clock 1:18:30] Deliberately brief --- acknowledge the
+  buzzword, place it correctly, move on. If asked in Q\&A: the DSP-adjacent
+  part is CV-QKD receivers (coherent detection, error reconciliation), a
+  legitimate niche for signal processors.}
+\end{frame}

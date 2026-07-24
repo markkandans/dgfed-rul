@@ -1,0 +1,116 @@
+% ============== Section 8: Multiple access & spectrum sharing (S51-S55) ===
+\section{Multiple Access \& Spectrum Sharing}
+
+% --- S51 -----------------------------------------------------------------
+\begin{frame}{Beyond orthogonal access}
+  \begin{itemize}\itemsep2pt
+    \item OMA (orthogonal slices) is capacity-optimal only in corner cases;
+          6G stress: massive connectivity + wildly heterogeneous QoS
+    \item Landscape: power-domain NOMA, code-domain (SCMA), \alert{RSMA},
+          grant-free access
+    \item 5G reality check: NOMA studied (MUST), \emph{not} widely deployed ---
+          SIC complexity vs modest gains
+    \item Reframe: multiple access $=$ an \alert{interference-management
+          philosophy}: avoid, cancel, or partially decode
+  \end{itemize}
+  \note{[S51, 1 min | clock 1:10, after Demo 5] Last stretch of theory ---
+  keep energy up. The philosophy framing organizes the zoo: OMA avoids
+  interference, NOMA decodes it fully at one side, RSMA decodes exactly the
+  part worth decoding. That one sentence is the section.}
+\end{frame}
+
+% --- S52 -----------------------------------------------------------------
+\begin{frame}{Power-domain NOMA and SIC}
+  \begin{equation*}
+    R_{\mathrm{far}}=\log_2\!\left(1+
+      \frac{P_2|h_f|^2}{P_1|h_f|^2+\sigma^2}\right),
+    \qquad
+    R_{\mathrm{near}}=\log_2\!\left(1+\frac{P_1|h_n|^2}{\sigma^2}\right)
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item Superpose users in power; near user decodes far user's signal,
+          \alert{cancels}, then decodes its own
+    \item Gains hinge on channel disparity ($|h_n|\gg|h_f|$)
+    \item Taxes: SIC error propagation, CSI sensitivity, scheduling
+          complexity --- degrades ungracefully with mobility
+  \end{itemize}
+  \note{[S52, 1 min | clock 1:11] Do the two-user intuition on the equation:
+  the far user treats the near user's signal as noise (it is weak at the far
+  end anyway); the near user can decode the strong far-user signal first and
+  subtract it exactly. Everything good about NOMA lives in that asymmetry ---
+  and everything fragile too, per the last bullet.}
+\end{frame}
+
+% --- S53 -----------------------------------------------------------------
+\begin{frame}{Rate-splitting multiple access (RSMA)}
+  \begin{equation*}
+    R_k = C_k + R_{p,k},
+    \qquad
+    \sum_k C_k \;\le\; \min_k\,\log_2\!\left(1+\mathrm{SINR}_{c,k}\right)
+  \end{equation*}
+  \begin{columns}[T]
+    \column{0.56\textwidth}
+    \begin{itemize}\itemsep1pt
+      \item Split each message: \alert{common part} (decoded by all) +
+            \alert{private part} (only own)
+      \item One SIC step: decode common, subtract, decode private
+      \item Spans SDMA $\leftrightarrow$ NOMA $\leftrightarrow$ multicast as
+            special cases of one framework
+    \end{itemize}
+    \column{0.42\textwidth}
+    \centering
+    \begin{tikzpicture}[node distance=2mm and 3.5mm]
+      \node[lab] (m) {$W_1,W_2$};
+      \node[blk, right=of m] (split) {split};
+      \node[blkb, above right=1mm and 4mm of split] (c) {common\\enc.};
+      \node[blkb, below right=1mm and 4mm of split] (p) {private\\enc.};
+      \node[blk, right=10mm of split, minimum width=8mm] (sum) {$\Sigma$};
+      \node[right=3mm of sum] (a) {\antsym};
+      \draw[arr] (m) -- (split);
+      \draw[arr] (split) |- (c); \draw[arr] (split) |- (p);
+      \draw[arr] (c) -| (sum); \draw[arr] (p) -| (sum);
+      \draw[arr] (sum) -- (a);
+    \end{tikzpicture}
+  \end{columns}
+  \note{[S53, 1.5 min | clock 1:12] The killer property to emphasize:
+  robustness to imperfect CSIT --- the common stream soaks up the interference
+  you failed to precode away, and RSMA is degrees-of-freedom optimal under
+  imperfect CSIT where SDMA collapses. That theoretical safety net is why it
+  keeps gaining 6G momentum.}
+\end{frame}
+
+% --- S54 -----------------------------------------------------------------
+\begin{frame}{Grant-free and unsourced random access}
+  \begin{itemize}\itemsep2pt
+    \item mMTC regime: short packets, sporadic activity, signaling handshakes
+          cost more than the payload
+    \item Activity detection $=$ \alert{compressed sensing} again: few active
+          users out of many $\Rightarrow$ sparse recovery / covariance methods
+    \item Unsourced RA: all users share one codebook; decoder returns an
+          unordered message list --- clean info-theoretic framing
+    \item Same sparsity toolbox as Section 4 --- third billing for the same math
+  \end{itemize}
+  \note{[S54, 1 min | clock 1:13:30] Connect explicitly back to S27: the
+  matrix is different, the math identical --- sparse unknowns, few
+  measurements. Unsourced RA one-liner: nobody says who they are; the decoder
+  outputs WHAT was said, identity rides inside the payload if needed.
+  Elegant, and increasingly practical.}
+\end{frame}
+
+% --- S55 -----------------------------------------------------------------
+\begin{frame}{Why RSMA keeps gaining traction for 6G}
+  \begin{itemize}\itemsep2pt
+    \item One framework unifying the access zoo --- fewer special cases to
+          standardize
+    \item Graceful degradation under \alert{imperfect CSIT} (the regime real
+          networks live in)
+    \item Documented synergies with multi-antenna ISAC and RIS beamforming
+    \item Entry fee: encoder/scheduler complexity, common-rate control
+          signaling
+  \end{itemize}
+  \vspace{2mm}
+  \centering\alert{``Split, superpose --- and let SIC do bounded work.''}
+  \note{[S55, 0.5 min | clock 1:14:30] Thirty-second summary + the quotable
+  line. Transition to Section 9: ``So far everything sat on towers. 6G
+  coverage does not stop at the horizon.''}
+\end{frame}

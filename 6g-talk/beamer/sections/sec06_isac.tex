@@ -1,0 +1,161 @@
+% ============== Section 6: Integrated Sensing & Communication (S36-S42) ===
+\section{Integrated Sensing \& Communication}
+
+% --- S36 -----------------------------------------------------------------
+\begin{frame}{Why ISAC}
+  \begin{itemize}\itemsep2pt
+    \item One spectrum, one infrastructure, \alert{two functions}:
+          communication + radar-style sensing
+    \item Drivers: spectrum scarcity; a dense cellular grid is a ready-made
+          sensor network; XR/V2X/drones need perception
+    \item IMT-2030 lists ISAC as a \emph{defining} scenario --- not an add-on
+    \item Economic pitch: sensing ``for free'' on waveforms you already
+          transmit
+  \end{itemize}
+  \note{[S36, 1 min | clock 0:48:30, after Demo 3] Re-entry: from programming
+  the channel to reading it. Frame ISAC as the cellular network growing a
+  sense of sight: every base station already illuminates the scene with
+  wideband, precisely timed signals --- we merely add the receiver processing.
+  The regulatory angle (spectrum reuse) is what makes operators care.}
+\end{frame}
+
+% --- S37 -----------------------------------------------------------------
+\begin{frame}{Radar refresher in one slide}
+  \begin{equation*}
+    \tau=\frac{2R}{c},\qquad
+    f_D=\frac{2v f_c}{c},\qquad
+    \Delta R=\frac{c}{2B},\qquad
+    \Delta v=\frac{c}{2 f_c\,T_{\mathrm{obs}}}
+  \end{equation*}
+  \begin{itemize}\itemsep2pt
+    \item Bandwidth buys range resolution; \emph{coherent observation time}
+          buys velocity resolution
+    \item Matched filtering + coherent integration $=$ the SNR workhorses;
+          ambiguity function encodes the trade-offs
+    \item All classic DSP --- 6G reuses it wholesale, on comm hardware
+  \end{itemize}
+  \note{[S37, 1.5 min | clock 0:49:30] Calibration slide for the comm-heavy
+  audience --- four formulas, no magic. Numbers for our demo: 30 MHz gives
+  5 m range resolution; 9 ms of symbols at 28 GHz gives about 5 m/s velocity
+  resolution. Say them now; Demo 4 will print exactly these.}
+\end{frame}
+
+% --- S38 -----------------------------------------------------------------
+\begin{frame}{OFDM as a radar waveform}
+  \begin{equation*}
+    D[n,m]=\frac{Y[n,m]}{X[n,m]}
+    \;\;\xrightarrow[\text{FFT over }m]{\text{IFFT over }n}\;\;
+    \text{range--Doppler map}
+  \end{equation*}
+  \centering
+  \resizebox{0.82\textwidth}{!}{\input{tikz/isac_rx}}
+  \note{[S38, 1.5 min | clock 0:51] The Sturm--Wiesbeck trick, walked on the
+  diagram: the receiver knows the transmitted grid X (it is the payload!), so
+  element-wise division leaves pure channel; an IFFT across subcarriers gives
+  delay, an FFT across symbols gives Doppler. Same ADC output feeds the comm
+  branch. One frame, two products.}
+\end{frame}
+
+% --- S39 -----------------------------------------------------------------
+\begin{frame}{Joint waveform design}
+  \begin{itemize}\itemsep2pt
+    \item Design axes: power/subcarrier allocation, dedicated sensing symbols
+          vs full data reuse, beampattern shaping
+    \item Inherent friction: comm wants \alert{randomness} (capacity), radar
+          wants \alert{determinism} (clean ambiguity function)
+    \item Recent theory: the ``random-data radar'' penalty is quantifiable ---
+          and often acceptably small
+    \item Sensing-assisted communication closes the loop: radar tracks feed
+          beam prediction
+  \end{itemize}
+  \note{[S39, 1 min | clock 0:52:30] The philosophical core of ISAC: our
+  cleanest radar waveforms are deterministic chirps; our best comm signals are
+  maximum-entropy noise. Joint design is negotiating between them. The
+  reverse direction (sensing helps comm --- beam prediction from tracks) may
+  land in products first.}
+\end{frame}
+
+% --- S40 -----------------------------------------------------------------
+\begin{frame}{Fundamental limits: CRB vs rate}
+  \begin{equation*}
+    \mathrm{var}(\hat\tau)\;\ge\;
+    \frac{1}{8\pi^{2}\,\beta_{\mathrm{rms}}^{2}\,\mathrm{SNR}\cdot N_{\mathrm{obs}}}
+    \qquad(\beta_{\mathrm{rms}}\!: \text{RMS bandwidth})
+  \end{equation*}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{itemize}\itemsep1pt
+      \item Delay CRB: RMS bandwidth is king --- edge subcarriers are gold for
+            ranging
+      \item Rate--CRB region: the capacity--distortion picture of ISAC
+      \item Waterfilling for rate $\neq$ waterfilling for sensing
+            $\Rightarrow$ principled compromises
+    \end{itemize}
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{fig_rate_crb.png}
+  \end{columns}
+  \note{[S40, 1 min | clock 0:53:30] One bound to take home: ranging accuracy
+  improves with RMS bandwidth, so power at the band edges helps sensing but
+  does nothing for capacity under flat channels --- hence the trade-off curve.
+  Walk the three dots: 5 percent of resources already buys cm-class CRB at
+  these SNRs; the curve is steep at first --- cheap lunches exist.}
+\end{frame}
+
+% --- S41 -----------------------------------------------------------------
+\begin{frame}{Monostatic, bistatic, and network sensing}
+  \begin{columns}[T]
+    \column{0.58\textwidth}
+    \begin{itemize}\itemsep2pt
+      \item \textbf{Monostatic}: full waveform knowledge; but TX--RX
+            \alert{self-interference} is brutal (full duplex or quasi-CW
+            operation)
+      \item \textbf{Bistatic} (BS$\to$UE, BS$\to$BS): no self-interference;
+            synchronization and clock offsets bite instead
+      \item \textbf{Network/multistatic}: fusion across cells --- geometry
+            diversity, coverage; cellular timing infrastructure helps
+    \end{itemize}
+    \column{0.4\textwidth}
+    \centering
+    \begin{tikzpicture}[scale=0.8]
+      \node[lab] (a) at (0,2.2) {\antsym};
+      \node[lab] at (-0.55,2.2) {mono};
+      \node[lab] (t) at (1.7,2.25) {\Large$\ast$};
+      \draw[arr, corange] (0.25,2.35) to[bend left=14] (1.5,2.4);
+      \draw[arr, corange] (1.5,2.15) to[bend left=14] (0.25,2.1);
+      \node[lab] (b1) at (0,0.7) {\antsym};
+      \node[lab] at (-0.55,0.7) {bi};
+      \node[lab] (t2) at (1.1,1.15) {\Large$\ast$};
+      \node[lab] (b2) at (2.3,0.6) {\antsym};
+      \draw[arr, corange] (0.2,0.9) -- (0.95,1.05);
+      \draw[arr, corange] (1.25,1.0) -- (2.1,0.8);
+    \end{tikzpicture}
+  \end{columns}
+  \note{[S41, 1 min | clock 0:54:30] Monostatic is conceptually clean (Demo 4
+  assumes it) but hides the hardest RF problem: your own transmit signal is
+  120 dB above the echo. Bistatic swaps that for a sync problem --- clocks at
+  the two ends drift. Network sensing is where cellular can beat classical
+  radar: many viewpoints, one timing backbone.}
+\end{frame}
+
+% --- S42 -----------------------------------------------------------------
+\begin{frame}{ISAC in 3GPP}
+  \begin{itemize}\itemsep2pt
+    \item Rel-19: dedicated \alert{channel-model study for ISAC} (targets with
+          RCS enter the stochastic model); SA1 use cases feed RAN
+    \item Rel-20 (6G study): sensing among the candidate native features;
+          ETSI ISG ISAC in parallel
+    \item Honest status: pre-normative --- first commercial ``sensing'' will
+          likely be positioning-class network features, then micro-Doppler
+          applications
+  \end{itemize}
+  \demoslot{4 (3 min)}{\textbf{Two moving targets on a range--Doppler map} ---
+    computed from a frame that is simultaneously carrying QPSK data.
+    \hfill\src{matlab/demo4\_isac\_range\_doppler}}
+  \note{[S42 + DEMO 4, 1+3 min | clock 0:55:30] Standards status in 30
+  seconds, then MATLAB. Demo 4 narration: the frame being processed carries
+  random QPSK --- point at the console line confirming data demodulation, then
+  the map: two blobs, annotated at 40 m/+15 m/s and 75 m/-25 m/s, within one
+  bin of truth. Note the weaker target sits a few dB lower partly due to bin
+  straddling (scalloping). If MATLAB fails: appendix A4. Done by ~0:59:30.}
+\end{frame}

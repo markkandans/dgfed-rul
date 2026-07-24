@@ -1,0 +1,74 @@
+% =========================================================================
+% Signal Processing for Beyond-5G and 6G Communications
+% 90-minute invited talk -- Beamer (Metropolis theme, pdflatex)
+%
+% Build:  pdflatex main.tex  (run twice for totals/progressbar)
+% Notes:  speaker notes are embedded via \note{}; to see them compile with
+%         \setbeameroption{show notes on second screen=right} uncommented.
+% =========================================================================
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usetheme[progressbar=frametitle,numbering=fraction,block=fill]{metropolis}
+% \setbeameroption{show notes on second screen=right}   % <- notes build
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{appendixnumberbeamer}   % appendix frames excluded from x/total
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric,decorations.pathmorphing}
+
+\graphicspath{{../figures/}{../figures/demo_backups/}}
+
+% ---- palette (matches figures/talk_style.py) ----------------------------
+\definecolor{accent}{HTML}{0F7173}     % petrol -- deck accent
+\definecolor{cblue}{HTML}{2A78D6}
+\definecolor{corange}{HTML}{EB6834}
+\definecolor{caqua}{HTML}{1BAF7A}
+\definecolor{cyellow}{HTML}{EDA100}
+\definecolor{cmagenta}{HTML}{E87BA4}
+\setbeamercolor{progress bar}{fg=accent}
+\setbeamercolor{alerted text}{fg=accent}
+\setbeamercolor{example text}{fg=caqua}
+
+% ---- helpers ------------------------------------------------------------
+\newcommand{\demoslot}[2]{%
+  \begin{alertblock}{$\blacktriangleright$ Live demo #1 runs here}#2\end{alertblock}}
+\newcommand{\antsym}{\tikz[baseline=-0.5mm]{\draw[thick]
+  (0,-1.6mm) -- (0,1.0mm) (0,1.0mm) -- (-1.5mm,3.2mm)
+  (0,1.0mm) -- (1.5mm,3.2mm) (-1.5mm,3.2mm) -- (1.5mm,3.2mm);}}
+\newcommand{\src}[1]{{\scriptsize\textcolor{gray}{#1}}}
+\tikzset{
+  blk/.style={draw=accent, thick, rounded corners=2pt, align=center,
+              minimum height=8.5mm, minimum width=16mm, font=\footnotesize,
+              fill=accent!8},
+  blkb/.style={blk, draw=cblue, fill=cblue!8},
+  arr/.style={-{Latex[length=2.6mm]}, thick},
+  lab/.style={font=\scriptsize, inner sep=1pt, align=center},
+}
+
+\title{Signal Processing for Beyond-5G and 6G Communications}
+\subtitle{Waveforms \textbullet\ ultra-massive MIMO \textbullet\ RIS
+          \textbullet\ ISAC \textbullet\ AI-native PHY}
+\author{Dr.~Markkandan~S}                       % TODO: adjust name/title
+\institute{School of Electronics Engineering, VIT}% TODO: adjust affiliation
+\date{Invited talk \,\textbullet\, 90 minutes \,\textbullet\, 2026}
+
+\begin{document}
+
+\input{sections/sec01_opening}
+\input{sections/sec02_spectrum}
+\input{sections/sec03_waveforms}
+\input{sections/sec04_mimo}
+\input{sections/sec05_ris}
+\input{sections/sec06_isac}
+\input{sections/sec07_ai}
+\input{sections/sec08_access}
+\input{sections/sec09_ntn}
+\input{sections/sec10_roadmap}
+\input{sections/sec11_closing}
+\input{sections/appendix_backups}
+
+\end{document}

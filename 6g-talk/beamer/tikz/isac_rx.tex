@@ -1,0 +1,44 @@
+% ISAC transceiver: one OFDM frame, comm + sensing branches (slide 38)
+\begin{tikzpicture}[node distance=3.5mm and 5mm]
+  \node[lab] (d) {data bits};
+  \node[blk, right=of d] (mod) {QPSK\\map};
+  \node[blk, right=of mod] (ofdm) {OFDM\\mod.\ $X[n,m]$};
+  \node[blk, right=of ofdm, minimum width=10mm] (pa) {PA};
+  \node[right=5mm of pa] (ant) {\antsym};
+  \draw[arr] (d) -- (mod); \draw[arr] (mod) -- (ofdm);
+  \draw[arr] (ofdm) -- (pa); \draw[arr] (pa) -- (ant);
+
+  % targets
+  \node[lab, align=center] (t1) at ($(ant)+(16mm,9mm)$) {\Large$\ast$\\[-4pt]\scriptsize target 1};
+  \node[lab, align=center] (t2) at ($(ant)+(20mm,-7mm)$) {\Large$\ast$\\[-4pt]\scriptsize target 2};
+  \draw[arr, corange, thick] ($(ant.east)+(1mm,1mm)$) to[bend left=12] (t1.west);
+  \draw[arr, corange, thick] (t1.south west) to[bend left=8] ($(ant.east)+(1mm,-0mm)$);
+  \draw[arr, corange, thick] ($(ant.east)+(1mm,-1mm)$) to[bend right=10] (t2.west);
+  \draw[arr, corange, thick] (t2.north west) to[bend right=6] ($(ant.east)+(1.5mm,-2mm)$);
+  \node[lab, corange] at ($(ant)+(20mm,2mm)$) {echoes};
+
+  % receive path (monostatic, shared ADC)
+  \node[blk, below=11mm of pa, minimum width=10mm] (adc) {ADC};
+  \draw[arr] (ant.south) |- (adc.east);
+  \node[blk, left=of adc] (fft) {OFDM\\demod.\ $Y[n,m]$};
+  \draw[arr] (adc) -- (fft);
+
+  % comm branch
+  \node[blk, below left=7mm and -2mm of fft, draw=cblue, fill=cblue!8] (eq)
+    {equalize\\ + detect};
+  \node[lab, left=of eq] (bits) {bits out\\ \scriptsize(comm)};
+  \draw[arr] (fft.south) |- (eq.east);
+  \draw[arr, cblue] (eq) -- (bits);
+
+  % sensing branch
+  \node[blk, left=of fft, draw=corange, fill=corange!8] (div)
+    {$D=\dfrac{Y[n,m]}{X[n,m]}$};
+  \node[blk, left=of div, draw=corange, fill=corange!8] (fft2)
+    {IFFT$_n$ / FFT$_m$};
+  \node[lab, left=of fft2, align=center] (rd) {range--Doppler\\map \scriptsize(sensing)};
+  \draw[arr] (fft) -- (div);
+  \draw[arr, corange] (div) -- (fft2);
+  \draw[arr, corange] (fft2) -- (rd);
+  \draw[arr, dashed, gray] (ofdm.south) to[bend right=18]
+    node[lab, sloped, below]{known TX symbols} (div.north);
+\end{tikzpicture}

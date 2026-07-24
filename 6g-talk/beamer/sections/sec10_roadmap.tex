@@ -1,0 +1,105 @@
+% ============== Section 10: Energy, standardization & roadmap (S61-S65) ===
+\section{Energy, Standardization \& Roadmap}
+
+% --- S61 -----------------------------------------------------------------
+\begin{frame}{Energy-efficient PHY design}
+  \begin{equation*}
+    \eta_{EE}=\frac{R}{P_{\mathrm{tot}}}\;\;\text{[bit/J]},
+    \qquad
+    P_{\mathrm{ADC}}\propto 2^{b} f_s
+  \end{equation*}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{itemize}\itemsep1pt
+      \item Network energy: OPEX + sustainability KPI (an IMT-2030 design
+            value)
+      \item Levers: PA operating point (waveform!), low-resolution ADCs,
+            sleep-aware signal design, lean always-on signals
+      \item Design shift: \alert{bit/J next to bit/s/Hz}
+    \end{itemize}
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig_energy_breakdown.png}
+  \end{columns}
+  \note{[S61, 1 min | clock 1:19] Tie the loop closed: the PAPR discussion
+  from Section 3 IS an energy topic --- back-off is wasted watts. Point at the
+  ADC/DAC share growing with bandwidth in the (illustrative) bars: the
+  converter wall is why low-resolution and hybrid architectures keep
+  winning trade studies at high bands.}
+\end{frame}
+
+% --- S62 -----------------------------------------------------------------
+\begin{frame}{The 3GPP road to 6G}
+  \centering
+  \includegraphics[width=0.76\textwidth]{fig_release_timeline.png}
+  \begin{itemize}\itemsep1pt
+    \item Rel-19 carries the studies that matter here (ISAC model, AI/ML);
+          Rel-20 opens the 6G study; Rel-21 goes normative $\Rightarrow$ first
+          spec $\approx$ 2028--29
+  \end{itemize}
+  \note{[S62, 1 min | clock 1:20] Practical advice for researchers: watch
+  study-item technical reports (TR 38.8xx/9xx series) --- they tell you what
+  industry will ask of academia two years ahead. WRC-27 will settle new
+  spectrum; Rel-20's study scope hardens in 2025--26 --- influence windows are
+  open now.}
+\end{frame}
+
+% --- S63 -----------------------------------------------------------------
+\begin{frame}{The ITU IMT-2030 process}
+  \begin{itemize}\itemsep2pt
+    \item M.2160 framework (2023) $\to$ requirements \& evaluation
+          methodology (2024--26) $\to$ proposal submissions $\to$
+          IMT-2030 specifications $\approx$ 2029--30
+    \item Same machinery that turned IMT-2020 into ``5G'' --- history rhymes
+    \item Feeding programs: Hexa-X-II (EU), Next G Alliance (US), IMT-2030
+          Promotion Group (CN), Bharat 6G (IN)
+  \end{itemize}
+  \note{[S63, 1 min | clock 1:21] De-mystify the acronym soup: ITU defines
+  what counts as 6G and evaluates candidates; 3GPP writes the technology that
+  gets submitted. For the audience's grant proposals: aligning objectives
+  with the published IMT-2030 capability list is free reviewer goodwill.}
+\end{frame}
+
+% --- S64 -----------------------------------------------------------------
+\begin{frame}{A research roadmap for this room}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \textbf{Start now (paper-sized):}
+    \begin{itemize}\itemsep1pt
+      \item DD-domain receivers \& AFDM studies
+      \item Near-field CSI \& codebooks
+      \item ISAC waveform trade-offs (CRB--rate)
+      \item Deep-unfolded PHY algorithms
+    \end{itemize}
+    \column{0.5\textwidth}
+    \textbf{Build toward (project-sized):}
+    \begin{itemize}\itemsep1pt
+      \item Cell-free + RIS testbeds \& field data
+      \item AI life-cycle management for PHY
+      \item Sub-THz prototyping \& measurements
+      \item Public channel datasets \& benchmarks
+    \end{itemize}
+  \end{columns}
+  \vspace{2mm}
+  \centering Choose problems where \alert{DSP insight beats brute force} ---
+  that is our comparative advantage.
+  \note{[S64, 0.5 min | clock 1:22] Match problems to resources honestly:
+  left column needs MATLAB and stubbornness; right column needs
+  infrastructure and consortia. The closing line is the career advice
+  version of the whole talk.}
+\end{frame}
+
+% --- S65 -----------------------------------------------------------------
+\begin{frame}{The 6G signal-processing map}
+  \centering
+  \includegraphics[width=0.9\textwidth]{fig_roadmap.png}
+  \vspace{2mm}
+  \begin{itemize}\itemsep1pt
+    \item Recurring themes: \alert{sparsity} \textbullet\ \alert{domain
+          transforms} \textbullet\ \alert{hardware-aware design} \textbullet\
+          \alert{model + data hybrids}
+  \end{itemize}
+  \note{[S65, 0.5 min | clock 1:22:30] Same roadmap as slide 5, now earned.
+  Name the four themes slowly --- they are the intellectual through-line:
+  every section used at least two of them. Transition to the close.}
+\end{frame}
