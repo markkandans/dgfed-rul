@@ -1,0 +1,343 @@
+% =========================================================================
+% Audience cheat-sheet -- Signal Processing for Beyond-5G and 6G
+% 2-page A4, article class, two columns, compact.
+% Build:  pdflatex -interaction=nonstopmode cheatsheet.tex   (run twice)
+% =========================================================================
+\documentclass[a4paper,9pt]{extarticle}
+
+\usepackage[a4paper,margin=10mm,columnsep=6mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+
+% ---- palette (matches the deck) -----------------------------------------
+\definecolor{accent}{HTML}{0F7173}
+\definecolor{cblue}{HTML}{2A78D6}
+\definecolor{corange}{HTML}{EB6834}
+
+% ---- compact spacing ----------------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\abovedisplayskip}{2pt}
+\setlength{\belowdisplayskip}{2pt}
+\setlength{\abovedisplayshortskip}{1pt}
+\setlength{\belowdisplayshortskip}{1pt}
+\setlength{\jot}{1.5pt}
+\setlist{nosep,leftmargin=1.1em}
+
+% ---- section headers ----------------------------------------------------
+\titleformat{\section}{\normalfont\bfseries\color{accent}\small}{}{0pt}{}
+\titlespacing{\section}{0pt}{4pt}{1pt}
+
+\newcommand{\thm}[1]{\vspace{1pt}\section*{}\textbf{\color{accent}#1}\par\nobreak\vspace{1pt}}
+% theme header inside multicols
+\newcommand{\block}[1]{\smallskip{\color{accent}\bfseries #1}\par\nobreak\vspace{1pt}}
+
+\pagestyle{empty}
+
+\begin{document}
+\small
+
+% ======================= TITLE ==========================================
+\begin{center}
+  {\large\bfseries Signal Processing for Beyond-5G / 6G --- Cheat Sheet}\\[1pt]
+  {\footnotesize\color{accent} Waveforms $\bullet$ ultra-massive MIMO $\bullet$
+   RIS $\bullet$ ISAC $\bullet$ AI-native PHY \quad|\quad companion to the
+   90-min invited talk}
+\end{center}
+\vspace{1pt}
+\hrule
+\vspace{3pt}
+
+\begin{multicols}{2}
+
+% ---------------- SPECTRUM & HARDWARE -----------------------------------
+\block{1. Sub-THz channel \& hardware (100--300 GHz)}
+Path loss = free-space spreading $\times$ molecular absorption:
+\begin{equation*}
+  \mathrm{PL}(f,d)=
+  \underbrace{\Big(\tfrac{4\pi f d}{c}\Big)^{2}}_{\text{spreading}}\cdot
+  \underbrace{e^{\kappa_{\mathrm{abs}}(f)\,d}}_{\text{molecular abs.}}
+\end{equation*}
+O$_2$/H$_2$O lines at 60, 119, 183, 325 GHz carve transmission windows;
+channel sparse, LoS-dominated $\Rightarrow$ pencil beams.
+
+\smallskip
+Rapp PA (AM/AM):
+\begin{equation*}
+  g(A)=\frac{G\,A}{\Big[1+\big(\tfrac{GA}{A_{\mathrm{sat}}}\big)^{2p}\Big]^{1/2p}}
+\end{equation*}
+Wiener phase noise:
+\begin{equation*}
+  \varphi[n{+}1]=\varphi[n]+w[n],\quad
+  w\sim\mathcal N\!\big(0,\,4\pi^{2}f_c^{2}c\,T_s\big)
+\end{equation*}
+PA back-off $\Rightarrow$ PAPR is first-class; phase-noise power $\propto f_c^{2}$.
+
+% ---------------- WAVEFORMS ---------------------------------------------
+\block{2. Waveforms}
+CP-OFDM symbol:
+\begin{equation*}
+  x[n]=\tfrac{1}{\sqrt N}\sum_{k=0}^{N-1}X_k\,e^{j2\pi kn/N}
+\end{equation*}
+OFDM ICI power under Doppler spread $f_d$ (symbol $T_s$):
+\begin{equation*}
+  P_{\mathrm{ICI}}\;\lesssim\;\frac{(\pi f_d T_s)^{2}}{3}
+\end{equation*}
+DFT-s-OFDM: $\mathbf X=F_M\mathbf s$ ($\approx$3 dB lower PAPR).
+
+\smallskip
+\textit{OTFS} --- doubly-dispersive input/output:
+\begin{equation*}
+  r(t)=\iint h(\tau,\nu)\,s(t-\tau)\,e^{j2\pi\nu(t-\tau)}\,\mathrm d\tau\,\mathrm d\nu
+\end{equation*}
+ISFFT (DD $\to$ TF grid):
+\begin{equation*}
+  X_{\mathrm{tf}}[n,m]=\tfrac{1}{\sqrt{NM}}
+  \sum_{k=0}^{N-1}\sum_{l=0}^{M-1}\! x[k,l]\,
+  e^{\,j2\pi(\frac{nk}{N}-\frac{ml}{M})}
+\end{equation*}
+DD input--output (2D twisted convolution):
+\begin{equation*}
+  y[k,l]\approx\sum_i h_i\,x\big[(k{-}k_i)_N,(l{-}l_i)_M\big]e^{j2\pi\phi_i}+w[k,l]
+\end{equation*}
+SFFT is the inverse of ISFFT; channel is sparse \& quasi-static in DD.
+
+\smallskip
+\textit{AFDM} --- discrete affine Fourier (chirp) basis:
+\begin{equation*}
+  \phi_m[n]=\tfrac{1}{\sqrt N}\,e^{\,j2\pi(c_1 n^{2}+\frac{mn}{N}+c_2 m^{2})}
+\end{equation*}
+Tune $c_1$ to the Doppler span; paths separate in the DAFT domain with
+1D single-symbol processing.
+
+% ---------------- MIMO --------------------------------------------------
+\block{3. Ultra-massive MIMO \& near field}
+Rayleigh (Fraunhofer) distance, aperture $D$:
+\begin{equation*}
+  d_R=\frac{2D^{2}}{\lambda}\qquad
+  \begin{cases} d>d_R:&\text{planar }\mathbf a(\theta)\\
+                d<d_R:&\text{spherical }\mathbf a(\theta,r)\end{cases}
+\end{equation*}
+$D{=}0.5$ m @ 30 GHz $\Rightarrow d_R{=}50$ m: users \emph{inside} near field
+$\Rightarrow$ range-selective beam focusing.
+
+\smallskip
+Hybrid precoding (unit-modulus RF, $|[F_{\mathrm{RF}}]_{ij}|{=}1/\sqrt{N_t}$):
+\begin{equation*}
+  \min_{F_{\mathrm{RF}},F_{\mathrm{BB}}}
+  \big\|F_{\mathrm{opt}}-F_{\mathrm{RF}}F_{\mathrm{BB}}\big\|_F
+  \;\text{s.t.}\; F_{\mathrm{RF}}\!\in\!\{\text{array responses}\}
+\end{equation*}
+Angle-sparse mmWave $\Rightarrow$ OMP; $N_{\mathrm{RF}}\!\approx\!N_s$
+chains $\approx$ digital.
+
+\smallskip
+CS channel estimation \& pilot contamination:
+\begin{equation*}
+  \mathbf y=\Phi\mathbf h+\mathbf n,\;\|\mathbf h\|_0{=}L\!\ll\!\dim,\;\;
+  \mathrm{SINR}_j\!\xrightarrow{M\to\infty}\!\frac{\beta_{jj}^{2}}{\sum_{l\neq j}\beta_{jl}^{2}}
+\end{equation*}
+
+% ---------------- RIS ---------------------------------------------------
+\block{4. Reconfigurable intelligent surfaces}
+Cascaded channel ($N$ elements):
+\begin{equation*}
+  y=\big(\bm h_r^{H}\Theta\,\bm G+h_d^{H}\big)x+n,\;\;
+  \Theta=\mathrm{diag}(\beta_1 e^{j\theta_1},\dots,\beta_N e^{j\theta_N})
+\end{equation*}
+Optimal phases $\Rightarrow$ received power scales as $N^{2}$:
+\begin{equation*}
+  \theta_n^{\star}=\arg(h_d)-\arg\!\big([\bm h_r]_n^{*}[\bm G]_n\big)
+  \;\Rightarrow\;
+  P_{\mathrm{rx}}\!\propto\!\Big(\textstyle\sum_n|[\bm h_r]_n||[\bm G]_n|\Big)^{2}\!\!\sim\! N^{2}
+\end{equation*}
+Co-phasing: $+6$ dB per doubling; random phases $\Rightarrow P\propto N$.
+Product path loss $\propto(d_1 d_2)^{-\alpha}$ (passivity tax).
+
+% ---------------- ISAC --------------------------------------------------
+\block{5. Radar \& ISAC}
+Delay / Doppler / resolutions:
+\begin{equation*}
+  \tau=\frac{2R}{c},\;\; f_D=\frac{2v f_c}{c},\;\;
+  \Delta R=\frac{c}{2B},\;\; \Delta v=\frac{c}{2 f_c T_{\mathrm{obs}}}
+\end{equation*}
+OFDM radar (RX knows $X$): $D[n,m]=Y[n,m]/X[n,m]$, then IFFT over $n$ /
+FFT over $m$ $\to$ range--Doppler map. Delay CRB:
+\begin{equation*}
+  \mathrm{var}(\hat\tau)\;\ge\;
+  \frac{1}{8\pi^{2}\,\beta_{\mathrm{rms}}^{2}\,\mathrm{SNR}\cdot N_{\mathrm{obs}}}
+\end{equation*}
+($\beta_{\mathrm{rms}}$ = RMS bandwidth $\Rightarrow$ edge subcarriers are gold.)
+
+% ---------------- ACCESS ------------------------------------------------
+\block{6. Multiple access}
+NOMA (SIC, superposition; near user cancels far):
+\begin{align*}
+  R_{\mathrm{far}}&=\log_2\!\Big(1+\tfrac{P_2|h_f|^2}{P_1|h_f|^2+\sigma^2}\Big),\\
+  R_{\mathrm{near}}&=\log_2\!\Big(1+\tfrac{P_1|h_n|^2}{\sigma^2}\Big)
+\end{align*}
+RSMA (split into common + private):
+\begin{equation*}
+  R_k=C_k+R_{p,k},\quad
+  \textstyle\sum_k C_k\le\min_k\log_2(1+\mathrm{SINR}_{c,k})
+\end{equation*}
+
+% ---------------- NTN & EE ----------------------------------------------
+\block{7. NTN \& energy efficiency}
+LEO Doppler ($v_{\mathrm{sat}}\!\approx\!7.6$ km/s):
+\begin{equation*}
+  f_D(t)=\frac{f_c}{c}\,v_{\mathrm{rel}}(t)\;\Rightarrow\;\pm25\,\text{ppm}
+  \;(\pm50\,\text{kHz @ 2 GHz})
+\end{equation*}
+Energy efficiency \& ADC power:
+\begin{equation*}
+  \eta_{EE}=\frac{R}{P_{\mathrm{tot}}}\ \text{[bit/J]},\qquad
+  P_{\mathrm{ADC}}\propto 2^{b} f_s
+\end{equation*}
+
+\end{multicols}
+
+\vspace{1pt}
+\hrule
+\vspace{3pt}
+
+% ---------------- TECH COMPARISON TABLE ---------------------------------
+{\color{accent}\bfseries Waveform comparison at a glance}\quad
+{\footnotesize (relative, qualitative)}
+\vspace{2pt}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\footnotesize
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{} & \textbf{CP-OFDM} & \textbf{DFT-s-OFDM} & \textbf{OTFS} & \textbf{AFDM} \\
+\midrule
+PAPR                 & high        & \textbf{low} ($-$3 dB) & high        & moderate \\
+Doppler robustness   & poor        & poor                   & \textbf{excellent} & \textbf{excellent} \\
+Diversity (doubly-disp.) & low     & low                    & full        & full \\
+Rx / detection cost  & \textbf{low} (1-tap) & low + FDE       & high (2D MP) & moderate (1D) \\
+Processing domain    & TF          & TF (SC)                & delay--Doppler & DAFT (chirp) \\
+Pilot / CE overhead  & moderate    & moderate               & low (DD impulse) & low \\
+Maturity / standards & \textbf{deployed} (4G/5G) & \textbf{5G UL} & research     & emerging (2023$+$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{1pt}
+{\footnotesize No single waveform wins every column $\Rightarrow$ expect
+scenario-adaptive PHY. Three formulas organize half the field:\;
+$P\!\propto\!N^{2}$ \ $\bullet$\ $d_R=2D^{2}/\lambda$ \ $\bullet$\
+$\mathrm{var}(\hat\tau)\ge 1/(8\pi^{2}\beta^{2}\,\mathrm{SNR})$.}
+
+\vspace{3pt}
+\hrule
+\vspace{3pt}
+
+% ---------------- AI-NATIVE + KEY NUMBERS + DEMOS ------------------------
+\begin{multicols}{2}
+
+\block{8. AI-native physical layer}
+\emph{Model deficit} (no faithful model, e.g.\ PA nonlinearity) vs
+\emph{algorithm deficit} (optimum intractable) $\Rightarrow$ learn the model /
+the algorithm. \textbf{Deep unfolding} turns $K$ iterations into a $K$-layer net:
+\begin{align*}
+  \text{ISTA:}\;& \mathbf x^{(k+1)}=\eta_{\lambda}\big(\mathbf x^{(k)}+A^{H}(\mathbf y-A\mathbf x^{(k)})\big)\\
+  \text{LISTA:}\;& \mathbf x^{(k+1)}=\eta_{\lambda_k}\big(W_1^{(k)}\mathbf y+W_2^{(k)}\mathbf x^{(k)}\big)
+\end{align*}
+Learned CSI estimation $\approx$ MMSE \emph{without} knowing statistics; neural
+receivers run inside 3GPP frames; end-to-end autoencoder PHY learns the
+constellation. 3GPP Rel-18/19: CSI-feedback compression, beam prediction,
+positioning. Open: data, generalization, trust.
+
+\block{Key numbers to remember}
+\begin{itemize}[leftmargin=1.1em,itemsep=0.3pt]
+  \item 500 km/h @ 28 GHz $\Rightarrow f_d\!\approx\!13$ kHz ($\varepsilon\!\approx\!0.11$)
+  \item $D{=}0.5$ m @ 30 GHz $\Rightarrow d_R{=}50$ m (near field)
+  \item $B{=}30$ MHz $\Rightarrow \Delta R\!\approx\!5$ m
+  \item RIS $N^{2}$: $+6$ dB per doubling of $N$
+  \item LEO 600 km @ 2 GHz $\Rightarrow \pm50$ kHz swing
+  \item DFT-s-OFDM $\approx3$ dB less PAPR than CP-OFDM
+  \item 3GPP: Rel-19 (ISAC model, AI/ML) $\to$ Rel-20/21 (6G) $\to$ spec $\sim$2029
+\end{itemize}
+
+\block{Five live MATLAB demos}
+\begin{enumerate}[leftmargin=1.4em,itemsep=0.3pt]
+  \item OFDM vs OTFS @ 500 km/h: OFDM BER floor, OTFS keeps falling
+  \item 64-el hybrid BF: 4 RF chains $\approx$ fully digital
+  \item RIS $N{=}16{-}1024$: slopes 2 (opt.) vs 1 (random)
+  \item OFDM-ISAC: two moving targets on a range--Doppler map
+  \item LS / MMSE / NN channel est.: learned $\approx$ MMSE
+\end{enumerate}
+
+\end{multicols}
+
+\vspace{2pt}
+\hrule
+\vspace{3pt}
+
+% ---------------- READING LIST ------------------------------------------
+{\color{accent}\bfseries Reading list --- 15 landmark references \& surveys}
+\vspace{2pt}
+
+\begin{multicols}{2}
+\footnotesize
+\begin{enumerate}[leftmargin=1.4em,itemsep=0.5pt]
+  \item ITU-R Rec.\ M.2160-0, ``Framework and overall objectives of the
+        future development of IMT for 2030 and beyond,'' Nov.\ 2023.
+  \item W. Saad, M. Bennis, and M. Chen, ``A vision of 6G wireless
+        systems: Applications, trends, technologies, and open research
+        problems,'' \emph{IEEE Network}, vol.\ 34, no.\ 3, 2020.
+  \item H. Tataria \emph{et al.}, ``6G wireless systems: Vision,
+        requirements, challenges, insights, and opportunities,''
+        \emph{Proc.\ IEEE}, vol.\ 109, no.\ 7, 2021.
+  \item R. Hadani \emph{et al.}, ``Orthogonal time frequency space
+        modulation,'' in \emph{Proc.\ IEEE WCNC}, 2017.
+  \item Z. Wei \emph{et al.}, ``Orthogonal time-frequency space
+        modulation: A promising next-generation waveform,'' \emph{IEEE
+        Wireless Commun.}, vol.\ 28, no.\ 4, 2021.
+  \item A. Bemani, N. Ksairi, and M. Kountouris, ``AFDM: Affine frequency
+        division multiplexing for next generation wireless
+        communications,'' \emph{IEEE Trans.\ Wireless Commun.}, 2023.
+  \item O. El Ayach, S. Rajagopal, S. Abu-Surra, Z. Pi, and R. W. Heath,
+        ``Spatially sparse precoding in millimeter wave MIMO systems,''
+        \emph{IEEE Trans.\ Wireless Commun.}, vol.\ 13, no.\ 3, 2014.
+  \item E. Bj\"ornson, J. Hoydis, and L. Sanguinetti, ``Massive MIMO has
+        unlimited capacity,'' \emph{IEEE Trans.\ Wireless Commun.},
+        vol.\ 17, no.\ 1, 2018.
+  \item Q. Wu and R. Zhang, ``Intelligent reflecting surface enhanced
+        wireless network via joint active and passive beamforming,''
+        \emph{IEEE Trans.\ Wireless Commun.}, vol.\ 18, no.\ 11, 2019.
+  \item M. Di Renzo \emph{et al.}, ``Smart radio environments empowered
+        by reconfigurable intelligent surfaces,'' \emph{IEEE J.\ Sel.\
+        Areas Commun.}, vol.\ 38, no.\ 11, 2020.
+  \item F. Liu \emph{et al.}, ``Integrated sensing and communications:
+        Toward dual-functional wireless networks for 6G and beyond,''
+        \emph{IEEE J.\ Sel.\ Areas Commun.}, vol.\ 40, no.\ 6, 2022.
+  \item C. Sturm and W. Wiesbeck, ``Waveform design and signal processing
+        aspects for fusion of wireless communications and radar
+        sensing,'' \emph{Proc.\ IEEE}, vol.\ 99, no.\ 7, 2011.
+  \item T. O'Shea and J. Hoydis, ``An introduction to deep learning for
+        the physical layer,'' \emph{IEEE Trans.\ Cogn.\ Commun.\ Netw.},
+        vol.\ 3, no.\ 4, 2017.
+  \item N. Shlezinger, J. Whang, Y. C. Eldar, and A. J. Goldsmith,
+        ``Model-based deep learning,'' \emph{Proc.\ IEEE}, vol.\ 111,
+        no.\ 5, 2023.
+  \item Y. Mao, O. Dizdar, B. Clerckx, R. Schober, P. Popovski, and
+        H. V. Poor, ``Rate-splitting multiple access: Fundamentals,
+        survey, and future research trends,'' \emph{IEEE Commun.\
+        Surveys Tuts.}, vol.\ 24, no.\ 4, 2022.
+\end{enumerate}
+\end{multicols}
+
+\vspace{1pt}
+{\footnotesize\color{gray}Tools: MATLAB (SPT/CommT/DLT) $\bullet$ NVIDIA Sionna
+$\bullet$ this talk's code \& Python verification ship together.}
+
+\end{document}
