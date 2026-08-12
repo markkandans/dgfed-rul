@@ -12,8 +12,9 @@ eq_bullets_img | img | table.
 
 TITLE = "Signal Processing for Beyond-5G and 6G Communications"
 SUBTITLE = "Waveforms  •  ultra-massive MIMO  •  RIS  •  ISAC  •  AI-native PHY"
-AUTHOR = "Dr. Markkandan S"
-INSTITUTE = "School of Electronics Engineering, VIT"
+AUTHOR = "Dr. Markkandan S  ·  Associate Professor"
+INSTITUTE = ("School of Electronics Engineering, "
+             "Vellore Institute of Technology, Chennai  ·  markkandan.s@vit.ac.in")
 DATE = "Invited talk  •  90 minutes  •  2026"
 
 SLIDES = [
@@ -769,7 +770,8 @@ SLIDES = [
                "volume/number details were compiled from memory — spot-check before "
                "printing."),
     dict(kind="standout", title="Thank you!",
-         lines=["Questions — now, or anytime:", "ipresearch7@gmail.com",
+         lines=["Dr. Markkandan S  ·  Associate Professor, SENSE, VIT Chennai",
+                "markkandan.s@vit.ac.in",
                 "Slides, MATLAB demos & Python verification code ship together."],
          notes="Land warmly; invite collaboration explicitly — faculty for joint "
                "proposals, scholars for co-supervision. Keep MATLAB open: the best "
