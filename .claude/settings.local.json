@@ -167,7 +167,10 @@
       "Read(//Users/markkandan/Downloads/**)",
       "Bash(markitdown \"org structure update need \\(1\\).xlsx\")",
       "Bash(grep -vE '^total|\\\\.\\\\.?$')",
-      "Bash(/opt/local/bin/pdfinfo latex/main.pdf)"
+      "Bash(/opt/local/bin/pdfinfo latex/main.pdf)",
+      "Bash(awk '/^@/{key=$0; hasdoi=0} /doi|DOI/{hasdoi=1} /^}/{printf \"%s  doi=%s\\\\n\", \\(hasdoi?\"[doi]\":\"[   ]\"\\), substr\\(key,1,45\\)}' refs.bib)",
+      "Bash(awk '!seen[$0]++')",
+      "Bash(awk '/\\\\\\\\begin{abstract}/,/\\\\\\\\end{abstract}/' main.tex)"
     ]
   }
 }
