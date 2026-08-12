@@ -18,15 +18,14 @@ aggregation weighting, on top of error-feedback top-k sparsification with
 8-bit quantization. On the C-MAPSS benchmark under two heterogeneity
 partitions with injected degradation-stage drift, DGFed reaches FedAvg-level
 accuracy at 8.0x lower uplink volume, and the trade-off transfers to a
-held-out subset under a completely frozen configuration.
+held-out subset under a completely frozen configuration, with one boundary reported.
 
 Two aspects may particularly interest the TII readership beyond the framework
-itself. First, the evaluation discipline: every component claim is backed by
-paired-seed statistics and activity diagnostics that verify each mechanism
+itself. First, the evaluation discipline: every component claim is backed by five-seed paired statistics and activity diagnostics that verify each mechanism
 actually operates at the reported operating point, with configuration
 calibrated on a development subset and confirmed on a held-out one. Second,
 an audited negative result: the representation–head personalization pattern
-common in federated prognostics degrades accuracy in all six paired seeds in
+common in federated prognostics degrades accuracy in 9 of 10 paired seeds in
 this setting, and the finding is dissected until three candidate mechanisms
 are excluded — a cautionary, actionable result for practitioners, reported
 with its boundary conditions stated.
