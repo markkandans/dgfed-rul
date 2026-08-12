@@ -160,7 +160,12 @@
       "Bash(/Users/markkandan/VIT/Research/Paper/Localization/6G/fed_rul/6g-talk/.venv/bin/python -c ' *)",
       "Bash(grep -E '\\\\.venv/|\\\\.aux$|\\\\.log$|\\\\.nav$|\\\\.snm$|\\\\.toc$|\\\\.out$|__pycache__|pretrained_net\\\\.mat')",
       "Bash(git checkout *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(awk '/Pages/{print \" main.pdf pages =\",$2}')",
+      "Bash(/opt/local/bin/pdfinfo cheatsheet.pdf)",
+      "Bash(awk '/Pages/{print \"  cheatsheet.pdf pages =\",$2}')",
+      "Read(//Users/markkandan/Downloads/**)",
+      "Bash(markitdown \"org structure update need \\(1\\).xlsx\")"
     ]
   }
 }
