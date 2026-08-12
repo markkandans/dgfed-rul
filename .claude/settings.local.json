@@ -165,7 +165,9 @@
       "Bash(/opt/local/bin/pdfinfo cheatsheet.pdf)",
       "Bash(awk '/Pages/{print \"  cheatsheet.pdf pages =\",$2}')",
       "Read(//Users/markkandan/Downloads/**)",
-      "Bash(markitdown \"org structure update need \\(1\\).xlsx\")"
+      "Bash(markitdown \"org structure update need \\(1\\).xlsx\")",
+      "Bash(grep -vE '^total|\\\\.\\\\.?$')",
+      "Bash(/opt/local/bin/pdfinfo latex/main.pdf)"
     ]
   }
 }
