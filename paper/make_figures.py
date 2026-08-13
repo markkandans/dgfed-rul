@@ -15,7 +15,9 @@ from matplotlib.patches import FancyBboxPatch
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIGDIR = os.path.join(ROOT, "paper", "latex", "figures")
+SUPPDIR = os.path.join(ROOT, "paper", "supplementary")
 os.makedirs(FIGDIR, exist_ok=True)
+os.makedirs(SUPPDIR, exist_ok=True)
 
 plt.rcParams.update({"font.family": "serif", "font.size": 8,
   "axes.grid": True, "grid.alpha": 0.25, "grid.linewidth": 0.5,
@@ -34,9 +36,9 @@ def J(rel):
     return json.load(open(os.path.join(ROOT, rel)))
 
 
-def save(fig, name):
+def save(fig, name, out=None):
     for ext, kw in (("pdf", {}), ("png", {"dpi": 300})):
-        fig.savefig(os.path.join(FIGDIR, f"{name}.{ext}"), bbox_inches="tight", **kw)
+        fig.savefig(os.path.join(out or FIGDIR, f"{name}.{ext}"), bbox_inches="tight", **kw)
     plt.close(fig)
     print(f"[saved] {name}.pdf/.png")
 
@@ -95,21 +97,28 @@ def fig3():
             "proposed_plain_aggregation", "proposed_no_compression"]
     labels = ["+ personal head", "– drift signal", "– event trigger",
               "– drift/stale agg.", "– compression"]
+    arm_key = {"+personal_head": "DGFed-P",
+               "proposed_no_drift_signal": "DGFed",
+               "proposed_no_event_trigger": "DGFed",
+               "proposed_plain_aggregation": "DGFed",
+               "proposed_no_compression": "No compression"}
     fig, axes = plt.subplots(1, 2, figsize=(3.5, 2.45), sharey=True)
     for ax, part in zip(axes, ["unit", "regime"]):
         for i, arm in enumerate(arms):
             d = an[part][arm]["per_seed_delta"]
             y = len(arms) - 1 - i
-            ax.plot(d, [y] * len(d), "o", ms=3, mfc="none", mec="0.45", mew=0.8)
-            ax.plot(np.mean(d), y, "D", ms=4.5, color="0.0")
-        ax.axvline(0, color="0.0", lw=0.7)
+            k = arm_key[arm]
+            ax.plot(d, [y] * len(d), MARKERS[k], ms=3, mfc="none",
+                    mec=COLORS[k], mew=0.8)
+            ax.plot(np.mean(d), y, MARKERS[k], ms=5, color=COLORS[k])
+        ax.axvline(0, color="#444444", lw=0.7)
         ax.set_yticks(range(len(arms)))
         ax.set_yticklabels(labels[::-1])
         ax.set_title(part, fontsize=7.5)
-        ax.grid(True, axis="x", lw=0.3, color="0.9")
+        ax.grid(axis="x")
         ax.set_xlabel(r"$\Delta$RMSE vs. proposed")
     fig.tight_layout(w_pad=0.6)
-    save(fig, "fig3_paired_deltas")
+    save(fig, "fig3_paired_deltas", out=SUPPDIR)
 
 
 # ---------------------------------------------------------- fig 4: retention
@@ -146,12 +155,12 @@ def fig5():
     fig, ax = plt.subplots(figsize=(3.5, 2.0))
     ax.axhspan(3, 8, color="0.9", lw=0)
     ax.text(260, 5.4, "target band", fontsize=6.5, color="0.35", va="center")
-    ax.plot(lams, fire, "-o", ms=4, color="0.0", label="drift fire rate")
+    ax.plot(lams, fire, "-o", ms=4, color=COLORS["DGFed"], label="drift fire rate")
     ax.axvline(5000, color="0.0", lw=0.7, ls=":")
     # observed transfer points at the chosen lambda (portability limitation)
     for y, lbl, dy in [(19.0, "FD004-regime", 0.6), (14.3, "FD002-regime", 0.6),
                        (6.7, "FD002-unit", -1.9)]:
-        ax.plot(5000, y, "o", ms=4, mfc="1.0", mec="0.0", mew=0.9)
+        ax.plot(5000, y, "o", ms=4, mfc="1.0", mec=COLORS["DGFed"], mew=0.9)
         ax.annotate(lbl, (5000, y), xytext=(3550, y + dy), fontsize=5.5,
                     ha="right", color="0.25",
                     arrowprops=dict(arrowstyle="-", lw=0.5, color="0.55"))
@@ -164,7 +173,9 @@ def fig5():
     ax.set_xlabel(r"Page–Hinkley threshold $\lambda$")
     ax.set_ylabel("drift fire rate (%)")
     ax2 = ax.twinx()
-    ax2.plot(lams, rmse, "--s", ms=3.5, color="0.5", label="RMSE (50 rounds)")
+    ax2.spines["right"].set_visible(True)
+    ax2.grid(False)
+    ax2.plot(lams, rmse, "--s", ms=3.5, color="#7F7F7F", label="RMSE (50 rounds)")
     ax2.set_ylabel("RMSE (cycles)", color="0.35")
     ax2.tick_params(axis="y", labelcolor="0.35")
     ax2.minorticks_off()
@@ -174,7 +185,7 @@ def fig5():
               loc="lower center", bbox_to_anchor=(0.5, 1.0))
     ax.grid(True, which="major", lw=0.3, color="0.9")
     fig.tight_layout()
-    save(fig, "fig5_lambda_sweep")
+    save(fig, "fig5_lambda_sweep", out=SUPPDIR)
 
 
 if __name__ == "__main__":
