@@ -17,20 +17,17 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIGDIR = os.path.join(ROOT, "paper", "latex", "figures")
 os.makedirs(FIGDIR, exist_ok=True)
 
-plt.rcParams.update({
-    "font.family": "serif",
-    "font.size": 8,
-    "axes.titlesize": 8,
-    "axes.labelsize": 8,
-    "legend.fontsize": 6.5,
-    "xtick.labelsize": 7,
-    "ytick.labelsize": 7,
-    "axes.linewidth": 0.6,
-    "lines.linewidth": 1.0,
-    "pdf.fonttype": 42,
-})
+plt.rcParams.update({"font.family": "serif", "font.size": 8,
+  "axes.grid": True, "grid.alpha": 0.25, "grid.linewidth": 0.5,
+  "axes.spines.top": False, "axes.spines.right": False,
+  "legend.frameon": False})
+plt.rcParams["pdf.fonttype"] = 42  # IEEE font embedding
 
-GRAYS = ["0.0", "0.35", "0.55", "0.7"]
+COLORS = {"DGFed": "#0072B2", "DGFed-P": "#D55E00",
+          "FedAvg": "#009E73", "FedProx": "#CC79A7",
+          "No compression": "#7F7F7F"}
+MARKERS = {"DGFed": "o", "DGFed-P": "s", "FedAvg": "^",
+           "FedProx": "v", "No compression": "D"}
 
 
 def J(rel):
@@ -55,36 +52,36 @@ def fig2():
         cal = J(f"results/merged5/FD004_calibrated/ablation_{part}.json")
         reb = J(f"results/merged5/FD004_rebased/ablation_{part}.json")
         pts = []
-        for label, src, marker, gray in [
-            ("Proposed", cal["no_personal_head"], "o", "0.0"),
-            ("DGFed-P (pers. head)", cal["full"], "s", "0.35"),
-            ("Proposed, no compr.", reb["proposed_no_compression"], "D", "0.55"),
+        for label, key, src in [
+            ("Proposed", "DGFed", cal["no_personal_head"]),
+            ("DGFed-P (pers. head)", "DGFed-P", cal["full"]),
+            ("Proposed, no compr.", "No compression", reb["proposed_no_compression"]),
         ]:
-            pts.append((label, src["total_MB_uploaded_mean"],
-                        src["rmse_mean"], src["rmse_std"], marker, gray))
-        for label, m, marker, gray in [("FedAvg", "fedavg", "^", "0.0"),
-                                       ("FedProx", "fedprox", "v", "0.45")]:
+            pts.append((label, key, src["total_MB_uploaded_mean"],
+                        src["rmse_mean"], src["rmse_std"]))
+        for label, key, m in [("FedAvg", "FedAvg", "fedavg"),
+                              ("FedProx", "FedProx", "fedprox")]:
             runs = J(f"results/merged5/FD004_{part}/{m}_FD004.json")["runs"]
             r = [x["rmse"] for x in runs]
-            pts.append((label, np.mean([x["total_MB_uploaded"] for x in runs]),
-                        np.mean(r), np.std(r), marker, gray))
-        for label, mb, rm, sd, marker, gray in pts:
-            ax.errorbar(mb, rm, yerr=sd, marker=marker, ms=5, color=gray,
-                        capsize=2, lw=0.8, ls="none", label=label)
+            pts.append((label, key, np.mean([x["total_MB_uploaded"] for x in runs]),
+                        np.mean(r), np.std(r)))
+        for label, key, mb, rm, sd in pts:
+            ax.errorbar(mb, rm, yerr=sd, marker=MARKERS[key], ms=5,
+                        color=COLORS[key], capsize=2, lw=0.8, ls="none",
+                        label=label)
         cen = [x["rmse"] for x in J(f"results/merged5/FD004_{part}/central_FD004.json")["runs"]]
-        ax.axhline(np.mean(cen), color="0.0", lw=0.8, ls=":")
+        ax.axhline(np.mean(cen), color="#444444", lw=0.8, ls=":")
         loc = np.mean([x["rmse"] for x in J(f"results/merged5/FD004_{part}/local_FD004.json")["runs"]])
-        ax.axhline(loc, color="0.6", lw=0.8, ls="--")
+        ax.axhline(loc, color="#999999", lw=0.8, ls="--")
         tx = 0.03 if part == "unit" else 0.45
         ax.text(tx, np.mean(cen), "centralized", fontsize=6, va="bottom",
-                ha="left", transform=ax.get_yaxis_transform(), color="0.0")
+                ha="left", transform=ax.get_yaxis_transform(), color="#444444")
         ax.text(tx, loc, "local-only", fontsize=6, va="bottom",
-                ha="left", transform=ax.get_yaxis_transform(), color="0.45")
+                ha="left", transform=ax.get_yaxis_transform(), color="#999999")
         ax.set_xscale("log")
         ax.set_ylabel("RMSE (cycles)")
         ax.set_title(f"FD004, {part} partition "
                      f"({cal['full']['n_clients']} clients)", fontsize=7.5)
-        ax.grid(True, which="both", lw=0.3, color="0.9")
     axes[0].legend(loc="center left", frameon=False, handletextpad=0.3)
     axes[1].set_xlabel("Total upload (MB, log scale)")
     fig.tight_layout(h_pad=1.0)
@@ -120,19 +117,20 @@ def fig4():
     fig, axes = plt.subplots(1, 2, figsize=(3.5, 1.75), sharey=True)
     for ax, part in zip(axes, ["unit", "regime"]):
         cal = J(f"results/merged5/FD004_calibrated/ablation_{part}.json")
-        for src, label, ls, marker, gray in [
-            (cal["no_personal_head"], "Proposed", "-", "o", "0.0"),
-            (cal["full"], "DGFed-P", "--", "s", "0.5"),
+        for src, label, key, ls in [
+            (cal["no_personal_head"], "Proposed", "DGFed", "-"),
+            (cal["full"], "DGFed-P", "DGFed-P", "--"),
         ]:
             bins = np.array(src["retention_rmse_bins"], dtype=float)
             m, s = bins.mean(axis=0), bins.std(axis=0)
             x = np.arange(1, bins.shape[1] + 1)
-            ax.plot(x, m, ls=ls, marker=marker, ms=3, color=gray, label=label)
-            ax.fill_between(x, m - s, m + s, color=gray, alpha=0.15, lw=0)
+            ax.plot(x, m, ls=ls, marker=MARKERS[key], ms=3,
+                    color=COLORS[key], label=label)
+            ax.fill_between(x, m - s, m + s, color=COLORS[key],
+                            alpha=0.18, lw=0)
         ax.set_xticks(x)
         ax.set_xlabel("ordered test-tail bin")
         ax.set_title(part, fontsize=7.5)
-        ax.grid(True, lw=0.3, color="0.9")
     axes[0].set_ylabel("RMSE (cycles)")
     axes[0].legend(frameon=False, loc="lower left", handlelength=1.6)
     fig.tight_layout(w_pad=0.6)
