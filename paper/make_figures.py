@@ -49,7 +49,7 @@ def save(fig, name, out=None):
 
 # --------------------------------------------- fig 2: communication–accuracy
 def fig2():
-    fig, axes = plt.subplots(2, 1, figsize=(3.5, 4.0), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(3.5, 3.70), sharex=True)
     for ax, part in zip(axes, ["unit", "regime"]):
         cal = J(f"results/merged5/FD004_calibrated/ablation_{part}.json")
         reb = J(f"results/merged5/FD004_rebased/ablation_{part}.json")
@@ -123,7 +123,7 @@ def fig3():
 
 # ---------------------------------------------------------- fig 4: retention
 def fig4():
-    fig, axes = plt.subplots(1, 2, figsize=(3.5, 1.75), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(3.5, 1.65), sharey=True)
     for ax, part in zip(axes, ["unit", "regime"]):
         cal = J(f"results/merged5/FD004_calibrated/ablation_{part}.json")
         for src, label, key, ls in [
@@ -141,7 +141,7 @@ def fig4():
         ax.set_xlabel("ordered test-tail bin")
         ax.set_title(part, fontsize=7.5)
     axes[0].set_ylabel("RMSE (cycles)")
-    axes[0].legend(frameon=False, loc="lower left", handlelength=1.6)
+    axes[0].legend(frameon=False, loc="lower right", handlelength=1.4, borderaxespad=0.2)
     fig.tight_layout(w_pad=0.6)
     save(fig, "fig4_retention")
 
