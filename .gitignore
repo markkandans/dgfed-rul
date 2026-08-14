@@ -20,3 +20,6 @@ logs/
 
 # macOS Finder metadata
 .DS_Store
+
+# local Claude session state
+.claude/
