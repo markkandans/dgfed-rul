@@ -4,9 +4,9 @@ Code, results, and verification manifest for the paper:
 
 > Markkandan S, "DGFed: Drift-Governed Federated Learning for Industrial
 > Remaining Useful Life Estimation," submitted to *IEEE Transactions on
-> Industrial Informatics*. [CITATION / DOI TO BE ADDED ON PUBLICATION]
+> Industrial Informatics*. Artifact DOI: https://doi.org/10.5281/zenodo.22640914
 
-Archived at: [ZENODO DOI]
+Archived at: https://doi.org/10.5281/zenodo.22640914
 
 ## What this repository contains
 
@@ -89,9 +89,9 @@ calibration curve; numbers appear in Secs. V-C and VI-E), and
 
 ## License
 
-Code: [MIT suggested — author to confirm]. Result files and figures:
-[CC BY 4.0 suggested — author to confirm]. The C-MAPSS dataset remains
-subject to NASA's own distribution terms and is not included.
+Code: MIT (see `LICENSE`). Result files and figures: CC BY 4.0 (see
+`DATA_LICENSE.md`). The C-MAPSS dataset remains subject to NASA's own
+distribution terms and is not included.
 
 ## Contact
 
